@@ -20,7 +20,9 @@ const Home = () => {
       </p>
 
       <button className="btn bg-primary text-light mb-3 mt-3">
-        Get Username{" "}
+        <Link to="/register" className="text-decoration-none text-light">
+          Get Username
+        </Link>
         <FontAwesomeIcon icon={faArrowRight} className="text-light ms-2" />
       </button>
 
