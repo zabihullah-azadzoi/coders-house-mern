@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-import StepPhoneEmail from "../../components/steps/StepPhoneEmail";
-import StepOtp from "../../components/steps/StepOtp";
+import StepPhoneEmail from "../../components/steps/StepPhoneEmail/StepPhoneEmail";
+import StepOtp from "../../components/steps/stepOtp/StepOtp";
 
 const steps = {
   1: StepPhoneEmail,
@@ -20,7 +20,6 @@ const Login = () => {
   return (
     <div>
       <StepComponent onNext={nextStepHandler} />
-      <p>Login</p>
     </div>
   );
 };

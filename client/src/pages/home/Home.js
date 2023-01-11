@@ -1,18 +1,14 @@
 import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHands, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 import Card from "../../components/shared/card/Card";
 
 const Home = () => {
   return (
-    <Card>
-      <div className="d-flex align-items-center justify-content-center mb-4">
-        <FontAwesomeIcon icon={faHands} className="text-warning h2 me-3" />
-        <span className="fw-bold h5">Welcome to Coders House</span>
-      </div>
+    <Card icon={"handwave-emoji"} title="Welcome to Coders House">
       <p className="">
         We are working hard to make Coders house ready for everyone. While we
         wrap up the finishing youches, we are adding more people into it, to

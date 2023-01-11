@@ -1,0 +1,19 @@
+.iconContainer {
+  display: flex;
+  align-items: center;
+  background-color: #1d1a1e;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  height: 4rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+.active {
+  background-color: #266cff !important;
+}
+
+.emailPhoneParagraph {
+  color: #bebcc0;
+  font-size: 13px;
+}
