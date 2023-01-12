@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 const client = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_TOKEN,
@@ -49,4 +50,10 @@ exports.verifyOtp = (phoneNumber, otp, expiresIn, hashedOtp) => {
     .digest("hex");
 
   return hashedOtp === otpAfterHash;
+};
+
+exports.generateJwt = (user) => {
+  return jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 };

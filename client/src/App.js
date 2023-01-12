@@ -1,6 +1,8 @@
 import "./App.css";
 
 import { Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Nav from "./components/layout/Nav/Nav";
 import Home from "./pages/home/Home";
@@ -19,43 +21,46 @@ const user = {
 
 function App() {
   return (
-    <div className="App">
-      <Nav />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <GuestRoutes Auth={Auth}>
-              <Home />
-            </GuestRoutes>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <SemiProtectedRoutes Auth={Auth} user={user}>
-              <Register />
-            </SemiProtectedRoutes>
-          }
-        />
-        <Route
-          path="/rooms"
-          element={
-            <ProtectedRoutes Auth={Auth} user={user}>
-              <Rooms />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <GuestRoutes Auth={Auth}>
-              <Login />
-            </GuestRoutes>
-          }
-        />
-      </Routes>
-    </div>
+    <>
+      <ToastContainer theme="colored" />
+      <div className="App">
+        <Nav />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <GuestRoutes Auth={Auth}>
+                <Home />
+              </GuestRoutes>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <SemiProtectedRoutes Auth={Auth} user={user}>
+                <Register />
+              </SemiProtectedRoutes>
+            }
+          />
+          <Route
+            path="/rooms"
+            element={
+              <ProtectedRoutes Auth={Auth} user={user}>
+                <Rooms />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <GuestRoutes Auth={Auth}>
+                <Login />
+              </GuestRoutes>
+            }
+          />
+        </Routes>
+      </div>
+    </>
   );
 }
 
