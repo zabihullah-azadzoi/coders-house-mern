@@ -53,7 +53,20 @@ exports.verifyOtp = (phoneNumber, otp, expiresIn, hashedOtp) => {
 };
 
 exports.generateJwt = (user) => {
-  return jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+  const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1h",
+  });
+
+  const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1y",
+  });
+
+  return { accessToken, refreshToken };
+};
+
+exports.verifyJWT = (token) => {
+  return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return console.log(err);
+    return decoded;
   });
 };

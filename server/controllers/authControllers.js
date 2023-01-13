@@ -18,7 +18,7 @@ exports.sendOtpHandler = async (req, res) => {
     const { otp, hash } = generateOtp(phoneNumber);
 
     // 3. send otp to phone number
-    sendOtp(otp, phoneNumber);
+    // sendOtp(otp, phoneNumber);
 
     res.json({
       message: "OTP is sent to provided phone number",
@@ -56,12 +56,19 @@ exports.verifyOtp = async (req, res) => {
       user = await new User({ phone: phoneNumber }).save();
     }
     // 3. generate jwt and send to client
-    const jwtToken = generateJwt(user);
-    res.cookie("JWT", jwtToken, {
+    const { accessToken, refreshToken } = generateJwt(user);
+
+    res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true,
     });
 
-    res.json({ user });
+    res.cookie("accessToken", accessToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true,
+    });
+
+    res.json({ user, auth: true });
   } catch (e) {
     res.status(400).json({ message: e.message });
   }

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-import StepName from "../../components/steps/StepName";
+import StepName from "../../components/steps/stepName/StepName";
 import StepPhoneEmail from "../../components/steps/StepPhoneEmail/StepPhoneEmail";
 import StepUsername from "../../components/steps/StepUsername";
 import StepOtp from "../../components/steps/stepOtp/StepOtp";
-import StepProfile from "../../components/steps/StepProfile";
+import StepProfile from "../../components/steps/stepProfile/StepProfile";
 import StepProgress from "../../components/steps/StepProgress";
 
 const steps = {

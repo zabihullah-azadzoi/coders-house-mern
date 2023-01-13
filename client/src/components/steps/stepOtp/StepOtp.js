@@ -19,7 +19,7 @@ const StepOtp = ({ onNext }) => {
   const verifyOtpHandler = () => {
     verifyOtp(otp, phone, hash)
       .then((res) => {
-        if (res.data.user) {
+        if (res.data.user && res.data.auth) {
           dispatch(setAuth({ user: res.data.user }));
         }
         console.log(res.data);

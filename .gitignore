@@ -5,7 +5,7 @@ node_modules
 /.pnp
 .pnp.js
 .env
-server/test.http
+storage
 
 # testing
 /coverage

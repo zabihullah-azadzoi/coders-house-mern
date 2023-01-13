@@ -1,4 +1,5 @@
 import axios from "axios";
+axios.defaults.withCredentials = true;
 
 export const sendOtp = async (phoneNumber) => {
   return await axios.post("http://localhost:5000/api/send-otp", {
