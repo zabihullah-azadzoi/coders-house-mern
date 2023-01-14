@@ -6,6 +6,7 @@ const {
   sendOtp,
   verifyOtp,
   generateJwt,
+  verifyJWT,
 } = require("../services/authServices");
 
 exports.sendOtpHandler = async (req, res) => {
@@ -78,13 +79,47 @@ exports.verifyOtp = async (req, res) => {
   }
 };
 
-exports.refreshTokenHandler = (req, res) => {
+exports.refreshTokenHandler = async (req, res) => {
   // 1. get refresh token from cookies
+  const { refreshToken: oldRefreshToken } = req.cookies;
+
   // 2. verify token if valid
+  const data = verifyJWT(oldRefreshToken);
+  if (!data || !data._id)
+    return res.status(400).json({ message: "Invalid refresh token!" });
+
   // 3. check if token is available in DB
+  const existingToken = await Token.findOne({
+    token: oldRefreshToken,
+    userId: data._id,
+  });
+  if (!existingToken)
+    return res.status(404).json({ message: "Invalid refresh token!" });
+
   // 4. check if user belonging to token exist
+  const existingUser = await User.findById(data._id);
+  if (!existingUser)
+    return res
+      .status(404)
+      .json({ message: "User doesn't exist in our System!" });
+
   // 5. generate new refresh and access token
+  const { accessToken, refreshToken } = generateJwt(data);
+
   // 6. save new refresh token in DB
+  await Token.updateOne({ _id: existingToken._id }, { token: refreshToken });
+
   // 7 . set cookies
+  res.cookie("refreshToken", refreshToken, {
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+    httpOnly: true,
+  });
+
+  res.cookie("accessToken", accessToken, {
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+    httpOnly: true,
+  });
+
   // 8. send response
+  res.json({ user: existingUser, isAuth: true });
 };

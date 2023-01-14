@@ -54,7 +54,7 @@ exports.verifyOtp = (phoneNumber, otp, expiresIn, hashedOtp) => {
 
 exports.generateJwt = (user) => {
   const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "1m",
   });
 
   const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
