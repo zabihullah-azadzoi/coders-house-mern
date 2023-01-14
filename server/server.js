@@ -13,7 +13,7 @@ const app = express();
 app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json({ limit: "8mb" }));
-app.use(express.static(path.join(__dirname, "storage")));
+app.use("/storage", express.static(path.join(__dirname, "storage")));
 
 app.use(authRouter);
 app.use(activateRouter);

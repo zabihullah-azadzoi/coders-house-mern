@@ -1,9 +1,13 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const SemiProtectedRoutes = ({ children, Auth, user }) => {
+const SemiProtectedRoutes = ({ children, isAuth, user }) => {
   return (
-    <>{!Auth || user.activated ? children : <Navigate to="/rooms" replace />}</>
+    <>
+      {isAuth && !user?.isActivated
+        ? children
+        : isAuth && user?.isActivated && <Navigate to="/rooms" replace />}
+    </>
   );
 };
 

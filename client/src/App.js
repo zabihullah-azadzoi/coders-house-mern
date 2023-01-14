@@ -3,10 +3,12 @@ import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 
 import Nav from "./components/layout/Nav/Nav";
 import Home from "./pages/home/Home";
-import Register from "./pages/register/Register";
+import Authenticate from "./pages/authenticate/Authenticate";
+import Activate from "./pages/activate/Activate";
 import Login from "./pages/login/Login";
 import Rooms from "./pages/rooms/Rooms";
 
@@ -14,46 +16,56 @@ import GuestRoutes from "./protectedRoutes/GuestRoutes";
 import SemiProtectedRoutes from "./protectedRoutes/SemiProtectedRoutes";
 import ProtectedRoutes from "./protectedRoutes/ProtectedRoutes";
 
-const Auth = false;
-const user = {
-  activated: false,
-};
-
 function App() {
+  const { isAuth, user } = useSelector((state) => state.auth);
   return (
     <>
       <ToastContainer theme="colored" />
+
       <div className="App">
         <Nav />
+
         <Routes>
           <Route
             path="/"
             element={
-              <GuestRoutes Auth={Auth}>
+              <GuestRoutes isAuth={isAuth}>
                 <Home />
               </GuestRoutes>
             }
           />
+
           <Route
-            path="/register"
+            path="/authenticate"
             element={
-              <SemiProtectedRoutes Auth={Auth} user={user}>
-                <Register />
+              <GuestRoutes isAuth={isAuth} user={user}>
+                <Authenticate />
+              </GuestRoutes>
+            }
+          />
+
+          <Route
+            path="/activate"
+            element={
+              <SemiProtectedRoutes isAuth={isAuth} user={user}>
+                <Activate />
               </SemiProtectedRoutes>
             }
           />
+
           <Route
             path="/rooms"
             element={
-              <ProtectedRoutes Auth={Auth} user={user}>
+              <ProtectedRoutes isAuth={isAuth} user={user}>
                 <Rooms />
               </ProtectedRoutes>
             }
           />
+
           <Route
             path="/login"
             element={
-              <GuestRoutes Auth={Auth}>
+              <GuestRoutes isAuth={isAuth}>
                 <Login />
               </GuestRoutes>
             }

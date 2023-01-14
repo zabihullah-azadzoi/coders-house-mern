@@ -4,12 +4,12 @@ const User = require("../models/User");
 exports.authMiddleware = async (req, res, next) => {
   const { refreshToken, accessToken } = req.cookies;
   if (!refreshToken || !accessToken) {
-    return res.status(401).json({ message: "Unauthorized!" });
+    return res.status(400).json({ message: "Invalid Token" });
   }
   const data = await verifyJWT(accessToken);
 
   if (!data || !data._id) {
-    return res.status(400).json({ message: "Invalid Token" });
+    return res.status(401).json({ message: "unAuthorized" });
   }
 
   const user = await User.findById(data._id);

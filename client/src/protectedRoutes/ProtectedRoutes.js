@@ -1,15 +1,15 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoutes = ({ children, Auth, user }) => {
+const ProtectedRoutes = ({ children, isAuth, user }) => {
   return (
     <>
-      {!Auth ? (
+      {!isAuth ? (
         <Navigate to="/" />
-      ) : Auth && !user.activated ? (
-        <Navigate to="/register" replace />
+      ) : isAuth && !user?.isActivated ? (
+        <Navigate to="/activate" replace />
       ) : (
-        children
+        isAuth && user?.isActivated && children
       )}
     </>
   );

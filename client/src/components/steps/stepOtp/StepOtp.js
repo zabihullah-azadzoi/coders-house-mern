@@ -4,6 +4,7 @@ import { verifyOtp } from "../../../http/authRequests";
 import Card from "../../shared/card/Card";
 import Button from "../../shared/button/Button";
 import TextInput from "../../shared/textInput/TextInput";
+import { useNavigate } from "react-router-dom";
 
 import { setAuth } from "../../../store/reducers/authReducer";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,10 +12,11 @@ import { toast } from "react-toastify";
 
 import styles from "./StepOtp.module.css";
 
-const StepOtp = ({ onNext }) => {
+const StepOtp = () => {
   const [otp, setOtp] = useState("");
   const { hash, phone } = useSelector((state) => state.auth.otp);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const verifyOtpHandler = () => {
     verifyOtp(otp, phone, hash)
@@ -23,7 +25,6 @@ const StepOtp = ({ onNext }) => {
           dispatch(setAuth({ user: res.data.user }));
         }
         console.log(res.data);
-        onNext();
       })
       .catch((e) =>
         e.response

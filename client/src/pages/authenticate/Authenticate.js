@@ -1,22 +1,14 @@
 import React, { useState } from "react";
 
-import StepName from "../../components/steps/stepName/StepName";
 import StepPhoneEmail from "../../components/steps/StepPhoneEmail/StepPhoneEmail";
-import StepUsername from "../../components/steps/StepUsername";
 import StepOtp from "../../components/steps/stepOtp/StepOtp";
-import StepProfile from "../../components/steps/stepProfile/StepProfile";
-import StepProgress from "../../components/steps/StepProgress";
 
 const steps = {
   1: StepPhoneEmail,
   2: StepOtp,
-  3: StepName,
-  4: StepProfile,
-  5: StepUsername,
-  6: StepProgress,
 };
 
-const Register = () => {
+const Authenticate = () => {
   const [step, setStep] = useState(1);
 
   const nextStepHandler = () => {
@@ -32,4 +24,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Authenticate;

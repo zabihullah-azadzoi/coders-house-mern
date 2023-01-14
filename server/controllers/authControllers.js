@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Token = require("../models/Token");
 
 const {
   generateOtp,
@@ -58,6 +59,9 @@ exports.verifyOtp = async (req, res) => {
     // 3. generate jwt and send to client
     const { accessToken, refreshToken } = generateJwt(user);
 
+    // 4. save refresh token to DB
+    await new Token({ token: refreshToken, userId: user._id }).save();
+
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 30,
       httpOnly: true,
@@ -72,4 +76,15 @@ exports.verifyOtp = async (req, res) => {
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
+};
+
+exports.refreshTokenHandler = (req, res) => {
+  // 1. get refresh token from cookies
+  // 2. verify token if valid
+  // 3. check if token is available in DB
+  // 4. check if user belonging to token exist
+  // 5. generate new refresh and access token
+  // 6. save new refresh token in DB
+  // 7 . set cookies
+  // 8. send response
 };

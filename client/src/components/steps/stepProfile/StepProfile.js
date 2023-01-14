@@ -7,14 +7,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { setImage } from "../../../store/reducers/profileReducer";
 import { activateProfileRequest } from "../../../http/activateRequests";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 import { setAuth } from "../../../store/reducers/authReducer";
 
-const StepProfile = ({ onNext }) => {
+const StepProfile = () => {
   const { name } = useSelector((state) => state.profile);
   const [profileImage, setProfileImage] = useState("");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const convertImageHandler = (e) => {
     const file = e.target.files[0];
@@ -39,7 +41,6 @@ const StepProfile = ({ onNext }) => {
           e.response ? e.response.data.message : "Something went wrong!"
         )
       );
-    onNext();
   };
 
   return (
