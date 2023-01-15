@@ -66,7 +66,7 @@ exports.generateJwt = (user) => {
 
 exports.verifyJWT = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return console.log(err);
+    if (err) return err;
     return decoded;
   });
 };

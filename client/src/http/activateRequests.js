@@ -1,14 +1,12 @@
-import axios from "axios";
+import axiosInstance from ".";
 
 export const activateProfileRequest = async (name, image) => {
-  return await axios.post(
-    "http://localhost:5000/api/activate",
-    {
-      name,
-      image,
-    },
-    {
-      withCredentials: true,
-    }
-  );
+  return await axiosInstance.post("/api/activate", {
+    name,
+    image,
+  });
+};
+
+export const autoRefreshHandler = async () => {
+  return await axiosInstance.get("/api/refresh");
 };

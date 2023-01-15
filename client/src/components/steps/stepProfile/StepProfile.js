@@ -30,15 +30,17 @@ const StepProfile = () => {
   const activateProfileHandler = () => {
     activateProfileRequest(name, profileImage)
       .then((res) => {
+        console.log(res);
         if (res.data.user) {
           dispatch(setAuth({ user: res.data.user }));
         }
       })
-      .catch((e) =>
+      .catch((e) => {
+        console.log(e);
         toast.error(
           e.response ? e.response.data.message : "Something went wrong!"
-        )
-      );
+        );
+      });
   };
 
   return (

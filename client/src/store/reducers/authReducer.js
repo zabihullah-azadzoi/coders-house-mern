@@ -9,8 +9,13 @@ export const authSlice = createSlice({
   },
   reducers: {
     setAuth: (state, action) => {
+      console.log(action.payload);
       state.user = action.payload.user;
-      state.isAuth = true;
+      if (action.payload.user) {
+        state.isAuth = true;
+      } else {
+        state.isAuth = false;
+      }
     },
     setOtp: (state, action) => {
       state.otp = action.payload;

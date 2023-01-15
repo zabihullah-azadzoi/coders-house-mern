@@ -1,9 +1,12 @@
+import { useEffect } from "react";
 import "./App.css";
 
 import { Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { autoRefreshHandler } from "./http/activateRequests";
+import { setAuth } from "./store/reducers/authReducer";
 
 import Nav from "./components/layout/Nav/Nav";
 import Home from "./pages/home/Home";
@@ -18,6 +21,18 @@ import ProtectedRoutes from "./protectedRoutes/ProtectedRoutes";
 
 function App() {
   const { isAuth, user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    autoRefreshHandler()
+      .then((res) => {
+        if (!res.data || !res.data.user) return;
+        console.log(res);
+        dispatch(setAuth(res.data));
+      })
+      .catch((error) => {});
+  }, [dispatch]);
+
   return (
     <>
       <ToastContainer theme="colored" />
