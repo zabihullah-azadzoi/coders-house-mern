@@ -1,5 +1,8 @@
 const User = require("../models/User");
-const { imageConverter } = require("../services/profileServices.js");
+const {
+  imageConverter,
+  formatUserData,
+} = require("../services/profileServices.js");
 
 exports.activateUserHandler = async (req, res) => {
   try {
@@ -21,13 +24,7 @@ exports.activateUserHandler = async (req, res) => {
     user.image = imageName;
     await user.save();
     res.json({
-      user: {
-        name: user.name,
-        phone: user.phone,
-        avatar: `${req.protocol}://${req.get("host")}/storage/${imageName}`,
-        _id: user._id,
-        isActivated: user.isActivated,
-      },
+      user: formatUserData(req, user),
     });
   } catch (e) {
     res.status(400).json({ message: e.message });

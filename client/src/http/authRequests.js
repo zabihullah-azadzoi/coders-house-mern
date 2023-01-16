@@ -13,3 +13,7 @@ export const verifyOtp = async (otp, phoneNumber, hash) => {
     hash,
   });
 };
+
+export const logoutHandlerRequest = async () => {
+  return await axiosInstance.get("/api/logout");
+};

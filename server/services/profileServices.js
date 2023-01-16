@@ -16,3 +16,13 @@ exports.imageConverter = (image) => {
 
   return imageName;
 };
+
+exports.formatUserData = (req, user) => {
+  return {
+    name: user.name,
+    phone: user.phone,
+    avatar: `${req.protocol}://${req.get("host")}/storage/${user.image}`,
+    _id: user._id,
+    isActivated: user.isActivated,
+  };
+};

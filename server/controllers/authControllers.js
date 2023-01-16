@@ -8,6 +8,7 @@ const {
   generateJwt,
   verifyJWT,
 } = require("../services/authServices");
+const { formatUserData } = require("../services/profileServices");
 
 exports.sendOtpHandler = async (req, res) => {
   try {
@@ -86,7 +87,7 @@ exports.refreshTokenHandler = async (req, res) => {
 
     // 2. verify token if valid
     const data = verifyJWT(oldRefreshToken);
-    if (!data || !data._id)
+    if (!data || !data?._id)
       return res.status(400).json({ message: "Invalid refresh token!" });
 
     // 3. check if token is available in DB
@@ -122,8 +123,24 @@ exports.refreshTokenHandler = async (req, res) => {
     });
 
     // 8. send response
-    res.json({ user: existingUser, isAuth: true });
+    res.json({ user: formatUserData(req, existingUser), isAuth: true });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
+};
+
+exports.logoutHandler = async (req, res) => {
+  const user = req.user;
+  const { refreshToken } = req.cookies;
+
+  await Token.findOneAndRemove({
+    token: refreshToken,
+    userId: user._id,
+  });
+
+  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken");
+
+  res.json({ user: null, isAuth: false });
 };
