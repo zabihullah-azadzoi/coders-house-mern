@@ -1,0 +1,17 @@
+.navImage {
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+  border: 3px solid #33b358;
+  border-radius: 50%;
+}
+
+.logoutButton {
+  background-color: #266cff;
+  border: none;
+  outline: none;
+  border-radius: 50%;
+  height: 2.5rem;
+  width: 2.5rem;
+  margin-left: 0.8rem;
+}
