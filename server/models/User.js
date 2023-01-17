@@ -14,7 +14,9 @@ const userSchema = mongoose.Schema(
 );
 
 function formatImageName(image) {
-  return `http://localhost:5000/storage/${image}`;
+  if (image) {
+    return `${process.env.BASE_URL}/storage/${image}`;
+  }
 }
 
 module.exports = mongoose.model("User", userSchema);

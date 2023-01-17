@@ -13,19 +13,22 @@ const Rooms = () => {
   const [showModal, setShowModal] = useState(false);
   const [roomType, setRoomType] = useState("open");
   const [topic, setTopic] = useState("");
-  const [allRooms, setAllrooms] = useState([]);
+  const [allRooms, setAllRooms] = useState([]);
 
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  // fetch all rooms
-  useEffect(() => {
+  const getAllRoomsHandler = () => {
     getAllRooms()
       .then((res) => {
-        setAllrooms(res.data);
-        console.log(res.data);
+        setAllRooms(res.data);
       })
       .catch((e) => toast.error("something went wrong!"));
+  };
+
+  // fetch all rooms
+  useEffect(() => {
+    getAllRoomsHandler();
   }, []);
 
   const createRoomHandler = () => {
@@ -34,7 +37,9 @@ const Rooms = () => {
       .then((res) => {
         toast.success("New room is Created");
         setShowModal(false);
-        // navigate(`/room/${res.data._id}`);
+        setTopic("");
+        getAllRoomsHandler();
+        navigate(`/room/${res.data._id}`);
       })
       .catch((e) => toast.error("something went wrong!"));
   };
@@ -62,7 +67,13 @@ const Rooms = () => {
       <div className="row gap-3 m-0 mt-4 ">
         {allRooms.length > 0 ? (
           allRooms.map((room) => {
-            return <RoomCard room={room} key={room._id} />;
+            return (
+              <RoomCard
+                room={room}
+                key={room._id}
+                onRoom={() => navigate(`/room/${room._id}`)}
+              />
+            );
           })
         ) : (
           <p className={`${styles.noRoomText}`}>

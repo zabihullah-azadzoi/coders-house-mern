@@ -13,6 +13,7 @@ import Authenticate from "./pages/authenticate/Authenticate";
 import Activate from "./pages/activate/Activate";
 import Login from "./pages/login/Login";
 import Rooms from "./pages/rooms/Rooms";
+import Room from "./pages/room/Room";
 
 import GuestRoutes from "./protectedRoutes/GuestRoutes";
 import SemiProtectedRoutes from "./protectedRoutes/SemiProtectedRoutes";
@@ -64,6 +65,15 @@ function App() {
               element={
                 <ProtectedRoutes isAuth={isAuth} user={user}>
                   <Rooms />
+                </ProtectedRoutes>
+              }
+            />
+
+            <Route
+              path="/room/:roomId"
+              element={
+                <ProtectedRoutes isAuth={isAuth} user={user}>
+                  <Room />
                 </ProtectedRoutes>
               }
             />

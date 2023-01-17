@@ -1,9 +1,12 @@
 import React from "react";
 import styles from "./RoomCard.module.css";
 
-const RoomCard = ({ room }) => {
+const RoomCard = ({ room, onRoom }) => {
   return (
-    <div className={`${styles.roomContainer} col-md-3 col-sm-12`}>
+    <div
+      className={`${styles.roomContainer} col-md-3 col-sm-12`}
+      onClick={onRoom}
+    >
       <h6>{room.title}</h6>
       <div className={`${styles.speakersContainer} mt-3 `}>
         {room.speakers.map((speaker) => {

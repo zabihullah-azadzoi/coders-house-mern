@@ -2,6 +2,7 @@
   background-color: #1d1a1e;
   border-radius: 1.5rem;
   padding: 1rem;
+  cursor: pointer;
 }
 
 .speakerAvatar {
