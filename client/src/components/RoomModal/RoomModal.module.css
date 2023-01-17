@@ -1,0 +1,64 @@
+.modalContainer {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.modalMask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: hsla(0, 0%, 0%, 0.5);
+}
+
+.modal {
+  background-color: #1d1a1e;
+  padding: 1rem;
+  border-radius: 1rem;
+  width: 30%;
+  max-width: 31rem;
+}
+
+.modalButton {
+  background-color: #33b358;
+  color: white;
+  padding: 4px 15px;
+  border: none;
+  outline: none;
+  border-radius: 2rem;
+}
+
+.modalFooterText {
+  color: #bebcc0;
+}
+
+.closeModalButton {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: lightgrey;
+  position: absolute;
+  top: 6px;
+  right: 10px;
+}
+
+.activeGroup {
+  background-color: #292829;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+}
+
+.roomTypeContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+}

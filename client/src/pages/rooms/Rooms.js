@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./Rooms.module.css";
 import RoomCard from "../../components/RoomCard/RoomCard";
+import RoomModal from "../../components/RoomModal/RoomModal";
 
 const dummy = [
   {
@@ -46,6 +47,7 @@ const dummy = [
       {
         id: 2,
         name: "Anushka Sharma",
+
         avatar: "/img/monkey.png",
       },
     ],
@@ -70,6 +72,9 @@ const dummy = [
 ];
 
 const Rooms = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [roomType, setRoomType] = useState("open");
+
   return (
     <div className={`${styles.Container} container pt-2 ps-5 pe-5`}>
       <div className="d-flex justify-content-between align-items-center">
@@ -81,7 +86,10 @@ const Rooms = () => {
           </div>
         </div>
         <div className="float-end">
-          <button className={`${styles.startRoomButton}`}>
+          <button
+            className={`${styles.startRoomButton}`}
+            onClick={() => setShowModal(true)}
+          >
             <img src="/img/sound-icon.png" alt="sound" />
             <span className="ms-2">Start a room</span>
           </button>
@@ -92,6 +100,13 @@ const Rooms = () => {
           return <RoomCard room={room} key={index} />;
         })}
       </div>
+      {showModal && (
+        <RoomModal
+          onSetShowModal={() => setShowModal(false)}
+          roomType={roomType}
+          onChooseRoomType={setRoomType}
+        />
+      )}
     </div>
   );
 };
