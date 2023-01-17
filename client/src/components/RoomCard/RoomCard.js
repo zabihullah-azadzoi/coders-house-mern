@@ -8,13 +8,19 @@ const RoomCard = ({ room }) => {
       <div className={`${styles.speakersContainer} mt-3 `}>
         {room.speakers.map((speaker) => {
           return (
-            <div key={speaker.id} className="position-relative ">
+            <div key={speaker._id} className="position-relative ">
               <img
-                src={speaker.avatar}
+                src={speaker.image ? speaker.image : "/img/monkey.png"}
                 alt="speaker avatar"
-                className={`${styles.speakerAvatar}`}
+                className={`${styles.speakerAvatar} ${
+                  room.speakers.length === 1 && "position-static"
+                }`}
               />
-              <div className="float-end mt-2 w-100 d-flex justify-content-end">
+              <div
+                className={`${styles.speakerName} ${
+                  room.speakers.length === 1 && "w-auto"
+                }`}
+              >
                 <span className="me-2">{speaker.name}</span>
                 <img src="/img/chat-icon.png" alt="speaker avatar" />
               </div>
@@ -24,7 +30,7 @@ const RoomCard = ({ room }) => {
       </div>
       <div className="d-flex align-items-center float-end mt-2 ">
         <span className={`${styles.participantsText}`}>
-          {room.totalParticipants}
+          {room.speakers.length}
         </span>
         <img src="/img/person-icon.png" alt="speaker avatar" />
       </div>

@@ -2,7 +2,14 @@ import React from "react";
 import styles from "./RoomModal.module.css";
 import TextInput from "../shared/textInput/TextInput";
 
-const RoomModal = ({ onSetShowModal, onChooseRoomType, roomType }) => {
+const RoomModal = ({
+  onSetShowModal,
+  onChooseRoomType,
+  roomType,
+  topic,
+  onSetTopic,
+  onCreateRoom,
+}) => {
   return (
     <div className={`${styles.modalContainer}`}>
       <div className={`${styles.modalMask}`} onClick={onSetShowModal}></div>
@@ -15,7 +22,7 @@ const RoomModal = ({ onSetShowModal, onChooseRoomType, roomType }) => {
         </button>
         <div className=" pb-5 mb-2 border-bottom border-secondary mt-2">
           <h6 className="mb-3">Enter the Topic to be discussed</h6>
-          <TextInput />
+          <TextInput onChangeHandler={onSetTopic} value={topic} />
         </div>
         <div className={`${styles.modalBody}`}>
           <p className="fw-bold">Room Type</p>
@@ -52,7 +59,7 @@ const RoomModal = ({ onSetShowModal, onChooseRoomType, roomType }) => {
             <p className={`${styles.modalFooterText}`}>
               Start a room, open to everyone
             </p>
-            <button className={`${styles.modalButton}`}>
+            <button className={`${styles.modalButton}`} onClick={onCreateRoom}>
               <img
                 src="/img/create-room-button-icon.png"
                 alt="create-room-button-icon"

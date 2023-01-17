@@ -7,8 +7,8 @@ const {
 exports.activateUserHandler = async (req, res) => {
   try {
     const { name, image } = req.body;
-    if (!name || !image) {
-      return res.status(400).json({ message: "all fields are required!" });
+    if (!name) {
+      return res.status(400).json({ message: "name is required!" });
     }
 
     const avatar = Buffer.from(

@@ -25,3 +25,11 @@
   color: #bebcc0;
   margin-right: 5px;
 }
+.speakerName {
+  /* float-end mt-2 w-100 d-flex justify-content-end */
+  float: right;
+  margin-top: 8px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,79 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Rooms.module.css";
 import RoomCard from "../../components/RoomCard/RoomCard";
 import RoomModal from "../../components/RoomModal/RoomModal";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const dummy = [
-  {
-    title: "Which Framework id best for frontend?",
-    speakers: [
-      {
-        id: 1,
-        name: "Virat Kohli",
-        avatar: "/img/monkey.png",
-      },
-      {
-        id: 2,
-        name: "Anushka Sharma",
-        avatar: "/img/monkey.png",
-      },
-    ],
-    totalParticipants: 8,
-  },
-  {
-    title: "Which Framework id best for frontend?",
-    speakers: [
-      {
-        id: 1,
-        name: "Virat Kohli",
-        avatar: "/img/monkey.png",
-      },
-      {
-        id: 2,
-        name: "Anushka Sharma",
-        avatar: "/img/monkey.png",
-      },
-    ],
-    totalParticipants: 8,
-  },
-  {
-    title: "Which Framework id best for frontend?",
-    speakers: [
-      {
-        id: 1,
-        name: "Virat Kohli",
-        avatar: "/img/monkey.png",
-      },
-      {
-        id: 2,
-        name: "Anushka Sharma",
+import { useSelector } from "react-redux";
 
-        avatar: "/img/monkey.png",
-      },
-    ],
-    totalParticipants: 8,
-  },
-  {
-    title: "Which Framework id best for frontend?",
-    speakers: [
-      {
-        id: 1,
-        name: "Virat Kohli",
-        avatar: "/img/monkey.png",
-      },
-      {
-        id: 2,
-        name: "Anushka Sharma",
-        avatar: "/img/monkey.png",
-      },
-    ],
-    totalParticipants: 8,
-  },
-];
+import { createRoom, getAllRooms } from "../../http/roomRequests";
 
 const Rooms = () => {
   const [showModal, setShowModal] = useState(false);
   const [roomType, setRoomType] = useState("open");
+  const [topic, setTopic] = useState("");
+  const [allRooms, setAllrooms] = useState([]);
+
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  // fetch all rooms
+  useEffect(() => {
+    getAllRooms()
+      .then((res) => {
+        setAllrooms(res.data);
+        console.log(res.data);
+      })
+      .catch((e) => toast.error("something went wrong!"));
+  }, []);
+
+  const createRoomHandler = () => {
+    if (!user?._id || !topic || !roomType) return;
+    createRoom(topic, roomType, user._id)
+      .then((res) => {
+        toast.success("New room is Created");
+        setShowModal(false);
+        // navigate(`/room/${res.data._id}`);
+      })
+      .catch((e) => toast.error("something went wrong!"));
+  };
 
   return (
     <div className={`${styles.Container} container pt-2 ps-5 pe-5`}>
@@ -96,15 +60,24 @@ const Rooms = () => {
         </div>
       </div>
       <div className="row gap-3 m-0 mt-4 ">
-        {dummy.map((room, index) => {
-          return <RoomCard room={room} key={index} />;
-        })}
+        {allRooms.length > 0 ? (
+          allRooms.map((room) => {
+            return <RoomCard room={room} key={room._id} />;
+          })
+        ) : (
+          <p className={`${styles.noRoomText}`}>
+            No active discussion is currently going on!
+          </p>
+        )}
       </div>
       {showModal && (
         <RoomModal
           onSetShowModal={() => setShowModal(false)}
           roomType={roomType}
           onChooseRoomType={setRoomType}
+          onSetTopic={setTopic}
+          topic={topic}
+          onCreateRoom={createRoomHandler}
         />
       )}
     </div>

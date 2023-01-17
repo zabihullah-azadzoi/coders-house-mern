@@ -7,6 +7,7 @@ require("./DBConnection");
 
 const authRouter = require("./routes/authRoutes");
 const activateRouter = require("./routes/activateRoutes");
+const roomRouter = require("./routes/roomRoutes");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use("/storage", express.static(path.join(__dirname, "storage")));
 
 app.use(authRouter);
 app.use(activateRouter);
+app.use(roomRouter);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
