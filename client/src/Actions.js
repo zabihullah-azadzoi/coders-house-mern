@@ -1,0 +1,3 @@
+const ACTIONS = {
+  JOIN: "join",
+};
