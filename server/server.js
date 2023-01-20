@@ -43,8 +43,6 @@ io.on("connection", (socket) => {
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
     clients.forEach((client) => {
-      console.log("client", client, "socketId: ", socket.id);
-
       io.to(client).emit(ACTIONS.ADD_PEER, {
         peerId: socket.id,
         createOffer: false,
@@ -61,7 +59,6 @@ io.on("connection", (socket) => {
     socket.join(roomId);
   });
 
-  console.log("clients in server: ", peerConnections);
   // handling relay ice event
   socket.on(ACTIONS.RELAY_ICE, ({ peerId, icecandidate }) => {
     io.to(peerId).emit(ACTIONS.RELAY_ICE, {

@@ -50,79 +50,75 @@ export const useWebRTC = (user, roomId) => {
 
     return () => {
       // Leaving the room
-      userMediaStream.current.getTracks().forEach((track) => {
-        track.stop();
-      });
-
-      socketRef.current.emit(ACTIONS.LEAVE, { roomId });
+      // userMediaStream.current.getTracks().forEach((track) => {
+      //   track.stop();
+      // });
+      // socketRef.current.emit(ACTIONS.LEAVE, { roomId });
     };
   }, [setClients, user, addNewClient, roomId]);
 
   // adding new peer
   useEffect(() => {
     const addNewPeer = async ({ peerId, createOffer, user: remoteUser }) => {
-      console.log("here", peerId, "createOffer", createOffer);
       // check if peer already exist!
-      // if (peerId in connectionsRef.current) return;
+      if (peerId in connectionsRef.current) return;
 
-      // connectionsRef.current[peerId] = new RTCPeerConnection({
-      //   iceServers: freeice(),
-      // });
+      connectionsRef.current[peerId] = new RTCPeerConnection({
+        iceServers: freeice(),
+      });
 
-      // // handling new ice candidate
-      // connectionsRef.current[peerId].onicecandidate = (e) => {
-      //   socketRef.current.emit(ACTIONS.RELAY_ICE, {
-      //     peerId,
-      //     icecandidate: e.candidate,
-      //   });
-      // };
+      // handling new ice candidate
+      connectionsRef.current[peerId].onicecandidate = (e) => {
+        socketRef.current.emit(ACTIONS.RELAY_ICE, {
+          peerId,
+          icecandidate: e.candidate,
+        });
+      };
 
-      // // handling on track on current peer connection
-      // connectionsRef.current[peerId].ontrack = ({
-      //   streams: [remoteStream],
-      // }) => {
-      //   addNewClient(remoteUser, () => {
-      //     if (audioElementsRef.current[remoteUser._id]) {
-      //       audioElementsRef.current[remoteUser._id].srcObject = remoteStream;
-      //     } else {
-      //       // rendering all clients might get a bit longer that's why we are using interval to check every second if clients list is updated and when it's updated and audio element is available than we are clearing the interval again.
-      //       let settled = true;
-      //       const interval = setInterval(() => {
-      //         if (audioElementsRef.current[remoteUser._id]) {
-      //           audioElementsRef.current[remoteUser._id].srcObject =
-      //             remoteStream;
+      // handling on track on current peer connection
+      connectionsRef.current[peerId].ontrack = ({
+        streams: [remoteStream],
+      }) => {
+        addNewClient(remoteUser, () => {
+          if (audioElementsRef.current[remoteUser._id]) {
+            audioElementsRef.current[remoteUser._id].srcObject = remoteStream;
+          } else {
+            // rendering all clients might get a bit longer that's why we are using interval to check every second if clients list is updated and when it's updated and audio element is available than we are clearing the interval again.
+            let settled = true;
+            const interval = setInterval(() => {
+              if (audioElementsRef.current[remoteUser._id]) {
+                audioElementsRef.current[remoteUser._id].srcObject =
+                  remoteStream;
 
-      //           settled = false;
-      //         }
-      //       }, 1000);
-      //       if (!settled) clearInterval(interval);
-      //     }
-      //   });
-      // };
+                settled = false;
+              }
+            }, 1000);
+            if (!settled) clearInterval(interval);
+          }
+        });
+      };
 
-      // // adding current's user or local tracks to remote connection
-      // userMediaStream.current.getTracks().forEach((track) => {
-      //   connectionsRef.current[peerId].addTrack(track, userMediaStream.current);
-      // });
+      // adding current's user or local tracks to remote connection
+      userMediaStream.current.getTracks().forEach((track) => {
+        connectionsRef.current[peerId].addTrack(track, userMediaStream.current);
+      });
 
-      // // create offer
-      // if (createOffer) {
-      //   const offer = await connectionsRef.current[peerId].createOffer();
-      //   await connectionsRef.current[peerId].setLocalDescription(offer);
+      // create offer
+      if (createOffer) {
+        const offer = await connectionsRef.current[peerId].createOffer();
+        await connectionsRef.current[peerId].setLocalDescription(offer);
 
-      //   socketRef.current.emit(ACTIONS.RELAY_SESSION_DESCRIPTION, {
-      //     peerId,
-      //     sessionDescription: offer,
-      //   });
-      // }
+        socketRef.current.emit(ACTIONS.RELAY_SESSION_DESCRIPTION, {
+          peerId,
+          sessionDescription: offer,
+        });
+      }
     };
 
-    socketRef.current.on(ACTIONS.ADD_PEER, (obj) => {
-      console.log(obj);
-    });
+    socketRef.current.on(ACTIONS.ADD_PEER, addNewPeer);
 
     return () => socketRef.current.off(ACTIONS.ADD_PEER);
-  }, [addNewClient]);
+  }, []);
 
   // handling relay ice event
   useEffect(() => {
@@ -139,7 +135,7 @@ export const useWebRTC = (user, roomId) => {
 
   // handling relay session description
   useEffect(() => {
-    const handleSessionDescription = ({
+    const handleSessionDescription = async ({
       peerId,
       sessionDescription: remoteSessionDescription,
     }) => {
@@ -147,10 +143,12 @@ export const useWebRTC = (user, roomId) => {
         new RTCSessionDescription(remoteSessionDescription)
       );
 
+      console.log("remoteSD", remoteSessionDescription);
+
       // if session description type is offer than create an answer
       if (remoteSessionDescription.type === "offer") {
         const connection = connectionsRef.current[peerId];
-        const answer = connection.createAnswer();
+        const answer = await connection.createAnswer();
         connection.setLocalDescription(answer);
 
         socketRef.current.emit(ACTIONS.RELAY_SESSION_DESCRIPTION, {
