@@ -11,7 +11,7 @@ exports.imageConverter = (image) => {
         .write(path.resolve(__dirname, `../storage/${imageName}`));
     })
     .catch((e) => {
-      throw new Error("Something went wrong!");
+      return new Error("Something went wrong!");
     });
 
   return imageName;

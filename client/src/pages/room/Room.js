@@ -2,9 +2,12 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useWebRTC } from "../../hooks/useWebRTC";
 
+import { useParams } from "react-router-dom";
+
 const Room = () => {
+  const { roomId } = useParams();
   const user = useSelector((state) => state.auth.user);
-  const { clients, provideRef } = useWebRTC(user);
+  const { clients, provideRef } = useWebRTC(user, roomId);
 
   console.log(clients);
 

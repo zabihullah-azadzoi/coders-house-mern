@@ -1,3 +1,0 @@
-const ACTIONS = {
-  JOIN: "join",
-};
