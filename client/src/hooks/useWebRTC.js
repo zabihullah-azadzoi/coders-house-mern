@@ -143,8 +143,6 @@ export const useWebRTC = (user, roomId) => {
         new RTCSessionDescription(remoteSessionDescription)
       );
 
-      console.log("remoteSD", remoteSessionDescription);
-
       // if session description type is offer than create an answer
       if (remoteSessionDescription.type === "offer") {
         const connection = connectionsRef.current[peerId];

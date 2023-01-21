@@ -103,6 +103,7 @@ io.on("connection", (socket) => {
     delete peerConnections[socket.id];
   };
   socket.on(ACTIONS.LEAVE, handleLeave);
+  socket.on("disconnecting", handleLeave);
 });
 
 const port = process.env.PORT || 5000;

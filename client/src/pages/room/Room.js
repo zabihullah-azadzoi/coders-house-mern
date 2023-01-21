@@ -1,32 +1,99 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import styles from "./Room.module.css";
 import { useSelector } from "react-redux";
 import { useWebRTC } from "../../hooks/useWebRTC";
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { getRoom } from "../../http/roomRequests";
+import { toast } from "react-toastify";
 
 const Room = () => {
+  const [room, setRoom] = useState("");
   const { roomId } = useParams();
   const user = useSelector((state) => state.auth.user);
   const { clients, provideRef } = useWebRTC(user, roomId);
+  const navigate = useNavigate();
 
-  // console.log(clients);
+  useEffect(() => {
+    getRoom(roomId)
+      .then((res) => {
+        setRoom(res.data.title);
+      })
+      .catch((e) =>
+        toast.error(
+          e.response ? e.response.data.message : "something went wrong!"
+        )
+      );
+  }, [roomId]);
+
+  const goBackHandler = () => {
+    navigate("/rooms");
+  };
 
   return (
-    <div>
-      {clients.length > 0 &&
-        clients.map((client) => {
-          return (
-            <div key={client._id}>
-              <audio
-                ref={(instance) => provideRef(instance, client._id)}
-                controls
-                autoPlay
+    <>
+      <div className={`${styles.Container} container pt-2 ps-5 pe-5`}>
+        <div className="d-flex justify-content-between align-items-center mb-5 mt-2">
+          <div className={styles.allRoomsTitle} onClick={goBackHandler}>
+            <img
+              src="/img/left-arrow-icon.png"
+              alt="vector"
+              className={styles.leftArrow}
+            />
+            <h6 className="m-0 ms-2">All Voice Rooms</h6>
+          </div>
+        </div>
+      </div>
+      <div className={styles.membersContainerWrapper}>
+        <div className="d-flex justify-content-between">
+          <h6 className="fw-bold">{room}</h6>
+          <div>
+            <span className={styles.emojiContainer}>
+              <img
+                src="/img/raise-hand-emoji.png"
+                alt="vector"
+                className={styles.leftArrow}
               />
-              <h6>{client.name}</h6>
-            </div>
-          );
-        })}
-    </div>
+            </span>
+            <span className={styles.emojiContainer}>
+              <img
+                src="/img/leave-quietly-emoji.png"
+                alt="vector"
+                className={styles.leftArrow}
+              />
+              <span className="ms-2">Leave quietly</span>
+            </span>
+          </div>
+        </div>
+        <div className="d-flex">
+          {clients.length > 0 &&
+            clients.map((client) => {
+              return (
+                <div key={client._id} className={styles.memberContainer}>
+                  <audio
+                    ref={(instance) => provideRef(instance, client._id)}
+                    // controls
+                    autoPlay
+                  />
+                  <div className="position-relative">
+                    <img
+                      className={styles.memberAvatar}
+                      src={client.avatar ? client.avatar : "/img/monkey.png"}
+                      alt="avatar"
+                    />
+                    <img
+                      src="/img/mute-icon.png"
+                      alt="avatar"
+                      className={styles.muteIcon}
+                    />
+                  </div>
+                  <h6>{client.name}</h6>
+                </div>
+              );
+            })}
+        </div>
+      </div>
+    </>
   );
 };
 
