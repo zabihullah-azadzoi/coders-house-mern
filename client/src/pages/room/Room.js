@@ -9,10 +9,17 @@ import { toast } from "react-toastify";
 
 const Room = () => {
   const [room, setRoom] = useState("");
+  const [mute, setMute] = useState(true);
   const { roomId } = useParams();
   const user = useSelector((state) => state.auth.user);
-  const { clients, provideRef } = useWebRTC(user, roomId);
+  const { clients, provideRef, muteStatusHandler } = useWebRTC(user, roomId);
   const navigate = useNavigate();
+
+  console.log(clients);
+
+  useEffect(() => {
+    muteStatusHandler(mute, user._id);
+  }, [mute, user, muteStatusHandler]);
 
   useEffect(() => {
     getRoom(roomId)
@@ -25,6 +32,11 @@ const Room = () => {
         )
       );
   }, [roomId]);
+
+  const muteHandler = (clientId) => {
+    if (clientId !== user._id) return;
+    setMute((prevState) => !prevState);
+  };
 
   const goBackHandler = () => {
     navigate("/rooms");
@@ -81,11 +93,21 @@ const Room = () => {
                       src={client.avatar ? client.avatar : "/img/monkey.png"}
                       alt="avatar"
                     />
-                    <img
-                      src="/img/mute-icon.png"
-                      alt="avatar"
-                      className={styles.muteIcon}
-                    />
+                    {client.isMute ? (
+                      <img
+                        onClick={() => muteHandler(client._id)}
+                        src="/img/mute-icon.png"
+                        alt="avatar"
+                        className={styles.micIcon}
+                      />
+                    ) : (
+                      <img
+                        onClick={() => muteHandler(client._id)}
+                        src="/img/unmute-icon.png"
+                        alt="avatar"
+                        className={styles.micIcon}
+                      />
+                    )}
                   </div>
                   <h6>{client.name}</h6>
                 </div>

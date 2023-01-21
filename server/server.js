@@ -102,6 +102,23 @@ io.on("connection", (socket) => {
 
     delete peerConnections[socket.id];
   };
+
+  socket.on(ACTIONS.MUTE, ({ roomId, userId }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+
+    clients.forEach((client) => {
+      io.to(client).emit(ACTIONS.MUTE, { userId });
+    });
+  });
+
+  socket.on(ACTIONS.UN_MUTE, ({ roomId, userId }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+
+    clients.forEach((client) => {
+      io.to(client).emit(ACTIONS.UN_MUTE, { userId });
+    });
+  });
+
   socket.on(ACTIONS.LEAVE, handleLeave);
   socket.on("disconnecting", handleLeave);
 });

@@ -10,6 +10,7 @@ export const useWebRTC = (user, roomId) => {
   const connectionsRef = useRef({});
   const userMediaStream = useRef();
   const socketRef = useRef();
+  const clientsRef = useRef([]);
 
   const provideRef = (instance, clientId) => {
     audioElementsRef.current[clientId] = instance;
@@ -18,6 +19,10 @@ export const useWebRTC = (user, roomId) => {
   useEffect(() => {
     socketRef.current = socketConnection();
   }, []);
+
+  useEffect(() => {
+    clientsRef.current = clients;
+  }, [clients]);
 
   const addNewClient = useCallback(
     (client, cb) => {
@@ -37,7 +42,7 @@ export const useWebRTC = (user, roomId) => {
     };
     getMediaStream()
       .then(() => {
-        addNewClient(user, () => {
+        addNewClient({ ...user, isMute: true }, () => {
           const localElement = audioElementsRef.current[user._id];
           if (localElement) {
             localElement.volume = 0;
@@ -79,7 +84,7 @@ export const useWebRTC = (user, roomId) => {
       connectionsRef.current[peerId].ontrack = ({
         streams: [remoteStream],
       }) => {
-        addNewClient(remoteUser, () => {
+        addNewClient({ ...remoteUser, isMute: true }, () => {
           if (audioElementsRef.current[remoteUser._id]) {
             audioElementsRef.current[remoteUser._id].srcObject = remoteStream;
           } else {
@@ -92,7 +97,7 @@ export const useWebRTC = (user, roomId) => {
 
                 settled = false;
               }
-            }, 1000);
+            }, 300);
             if (!settled) clearInterval(interval);
           }
         });
@@ -188,5 +193,60 @@ export const useWebRTC = (user, roomId) => {
     };
   }, [setClients]);
 
-  return { clients, provideRef };
+  //mute/unmute events
+  useEffect(() => {
+    socketRef.current.on(ACTIONS.MUTE, ({ userId }) => {
+      console.log("mute");
+      setMute(true, userId);
+    });
+
+    socketRef.current.on(ACTIONS.UN_MUTE, ({ userId }) => {
+      console.log("un mute");
+      setMute(false, userId);
+    });
+
+    const setMute = (mute, userId) => {
+      const clientIndex = clientsRef.current
+        .map((client) => client._id)
+        .indexOf(userId);
+
+      const connectedClients = JSON.parse(JSON.stringify(clientsRef.current));
+      if (clientIndex > -1) {
+        connectedClients[clientIndex].isMute = mute;
+
+        setClients(connectedClients);
+      }
+    };
+
+    return () => {
+      socketRef.current.off(ACTIONS.MUTE);
+      socketRef.current.off(ACTIONS.UN_MUTE);
+    };
+  }, [setClients]);
+
+  // mute status handling
+  const muteStatusHandler = useCallback(
+    (mute, userId) => {
+      let settled = false;
+      const interval = setInterval(() => {
+        if (userMediaStream.current) {
+          userMediaStream.current.getTracks()[0].enabled = !mute;
+          console.log(userMediaStream.current.getTracks()[0]);
+
+          if (mute) {
+            socketRef.current.emit(ACTIONS.MUTE, { roomId, userId });
+          } else {
+            socketRef.current.emit(ACTIONS.UN_MUTE, { roomId, userId });
+          }
+
+          settled = true;
+        }
+
+        if (settled) clearInterval(interval);
+      }, 200);
+    },
+    [roomId]
+  );
+
+  return { clients, provideRef, muteStatusHandler };
 };
