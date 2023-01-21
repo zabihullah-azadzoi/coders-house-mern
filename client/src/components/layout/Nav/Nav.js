@@ -30,7 +30,7 @@ const Nav = () => {
         <div className="d-flex align-items-center">
           <span className="me-3">{user?.name && user.name}</span>
           <img
-            src="/img/monkey.png"
+            src={user?.avatar ? user.avatar : "/img/monkey.png"}
             alt="profile"
             className={`${styles.navImage} `}
           />

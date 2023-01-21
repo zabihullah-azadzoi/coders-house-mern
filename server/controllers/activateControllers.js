@@ -11,21 +11,31 @@ exports.activateUserHandler = async (req, res) => {
       return res.status(400).json({ message: "name is required!" });
     }
 
-    const avatar = Buffer.from(
-      image.replace("data:image/jpeg;base64,", ""),
-      "base64"
-    );
+    if (image) {
+      const avatar = Buffer.from(
+        image.replace("data:image/jpeg;base64,", ""),
+        "base64"
+      );
 
-    const imageName = imageConverter(avatar);
+      const imageName = imageConverter(avatar);
 
-    const user = await User.findById(req.user._id);
-    user.isActivated = true;
-    user.name = name;
-    user.image = imageName;
-    await user.save();
-    res.json({
-      user: formatUserData(req, user),
-    });
+      const user = await User.findById(req.user._id);
+      user.isActivated = true;
+      user.name = name;
+      user.image = imageName;
+      await user.save();
+      res.json({
+        user: formatUserData(req, user),
+      });
+    } else {
+      const user = await User.findById(req.user._id);
+      user.isActivated = true;
+      user.name = name;
+      await user.save();
+      res.json({
+        user: formatUserData(req, user),
+      });
+    }
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
