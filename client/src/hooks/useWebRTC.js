@@ -86,12 +86,14 @@ export const useWebRTC = (user, roomId) => {
       }) => {
         addNewClient({ ...remoteUser, isMute: true }, () => {
           if (audioElementsRef.current[remoteUser._id]) {
+            audioElementsRef.current[remoteUser._id].volume = 0;
             audioElementsRef.current[remoteUser._id].srcObject = remoteStream;
           } else {
             // rendering all clients might get a bit longer that's why we are using interval to check every second if clients list is updated and when it's updated and audio element is available than we are clearing the interval again.
             let settled = true;
             const interval = setInterval(() => {
               if (audioElementsRef.current[remoteUser._id]) {
+                audioElementsRef.current[remoteUser._id].volume = 0;
                 audioElementsRef.current[remoteUser._id].srcObject =
                   remoteStream;
 
@@ -127,11 +129,14 @@ export const useWebRTC = (user, roomId) => {
 
   // handling relay ice event
   useEffect(() => {
-    socketRef.current.on(ACTIONS.RELAY_ICE, ({ peerId, icecandidate }) => {
-      if (icecandidate) {
-        connectionsRef.current[peerId].addIceCandidate(icecandidate);
+    socketRef.current.on(
+      ACTIONS.RELAY_ICE,
+      async ({ peerId, icecandidate }) => {
+        if (icecandidate) {
+          await connectionsRef.current[peerId].addIceCandidate(icecandidate);
+        }
       }
-    });
+    );
 
     return () => {
       socketRef.current.off(ACTIONS.RELAY_ICE);
@@ -144,7 +149,7 @@ export const useWebRTC = (user, roomId) => {
       peerId,
       sessionDescription: remoteSessionDescription,
     }) => {
-      connectionsRef.current[peerId].setRemoteDescription(
+      await connectionsRef.current[peerId].setRemoteDescription(
         new RTCSessionDescription(remoteSessionDescription)
       );
 
@@ -152,7 +157,7 @@ export const useWebRTC = (user, roomId) => {
       if (remoteSessionDescription.type === "offer") {
         const connection = connectionsRef.current[peerId];
         const answer = await connection.createAnswer();
-        connection.setLocalDescription(answer);
+        await connection.setLocalDescription(answer);
 
         socketRef.current.emit(ACTIONS.RELAY_SESSION_DESCRIPTION, {
           peerId,
@@ -196,16 +201,20 @@ export const useWebRTC = (user, roomId) => {
   //mute/unmute events
   useEffect(() => {
     socketRef.current.on(ACTIONS.MUTE, ({ userId }) => {
-      console.log("mute");
       setMute(true, userId);
     });
 
     socketRef.current.on(ACTIONS.UN_MUTE, ({ userId }) => {
-      console.log("un mute");
       setMute(false, userId);
     });
 
     const setMute = (mute, userId) => {
+      const remoteAudio = audioElementsRef.current[userId];
+      if (mute) {
+        remoteAudio.volume = 0;
+      } else {
+        remoteAudio.volume = 1;
+      }
       const clientIndex = clientsRef.current
         .map((client) => client._id)
         .indexOf(userId);
@@ -231,7 +240,6 @@ export const useWebRTC = (user, roomId) => {
       const interval = setInterval(() => {
         if (userMediaStream.current) {
           userMediaStream.current.getTracks()[0].enabled = !mute;
-          console.log(userMediaStream.current.getTracks()[0]);
 
           if (mute) {
             socketRef.current.emit(ACTIONS.MUTE, { roomId, userId });
@@ -242,11 +250,17 @@ export const useWebRTC = (user, roomId) => {
           settled = true;
         }
 
-        if (settled) clearInterval(interval);
+        if (settled) {
+          clearInterval(interval);
+        }
       }, 200);
     },
     [roomId]
   );
 
-  return { clients, provideRef, muteStatusHandler };
+  return {
+    clients,
+    provideRef,
+    muteStatusHandler,
+  };
 };
