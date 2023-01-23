@@ -1,8 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { useStateWithCallback } from "./useStateWithCallback";
 import socketConnection from "../socket/index";
+import { addSpeaker } from "../http/roomRequests";
+
 import ACTIONS from "../actions";
 import freeice from "freeice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export const useWebRTC = (user, roomId) => {
   const [clients, setClients] = useStateWithCallback([]);
@@ -12,8 +16,20 @@ export const useWebRTC = (user, roomId) => {
   const socketRef = useRef();
   const clientsRef = useRef([]);
 
+  const navigate = useNavigate();
+
+  const socketErrorHandler = (err) => {
+    console.log(err);
+    toast.error("Couldn't connect to server, please try again later!");
+    navigate("/rooms");
+  };
+
   const provideRef = (instance, clientId) => {
     audioElementsRef.current[clientId] = instance;
+
+    //socket error handling
+    socketRef.current.on("connect_error", (err) => socketErrorHandler(err));
+    socketRef.current.on("connect_failed", (err) => socketErrorHandler(err));
   };
 
   const addNewClient = useCallback(
@@ -22,6 +38,16 @@ export const useWebRTC = (user, roomId) => {
 
       if (existingClient === undefined) {
         setClients((prevState) => [...prevState, client], cb);
+
+        if (client._id !== user._id) {
+          addSpeaker(roomId, client._id, "add")
+            .then((res) => {})
+            .catch((e) =>
+              toast.error(
+                e.response ? e.response.data.message : "something went wrong!"
+              )
+            );
+        }
       }
     },
     [clients, setClients]
@@ -130,6 +156,14 @@ export const useWebRTC = (user, roomId) => {
       setClients((prevState) => {
         return prevState.filter((client) => client._id !== userId);
       });
+
+      addSpeaker(roomId, userId, "remove")
+        .then((res) => {})
+        .catch((e) =>
+          toast.error(
+            e.response ? e.response.data.message : "something went wrong!"
+          )
+        );
     },
     [setClients]
   );

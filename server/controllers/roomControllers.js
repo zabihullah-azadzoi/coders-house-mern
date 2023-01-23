@@ -1,5 +1,5 @@
+const { json } = require("express");
 const Room = require("../models/Room");
-const { formatUserData } = require("../services/profileServices");
 
 exports.createRoom = async (req, res) => {
   try {
@@ -42,5 +42,40 @@ exports.getRoom = async (req, res) => {
     res.json(room);
   } catch (e) {
     res.status(500).json({ message: e.message });
+  }
+};
+
+exports.roomSpeakersHandler = async (req, res) => {
+  try {
+    const roomId = req.params.roomId;
+    const speakerId = req.body.speakerId;
+    const flag = req.body.flag;
+    let updatedRoom;
+
+    console.log(roomId, speakerId);
+
+    if (!roomId || !speakerId) {
+      return res
+        .status(400)
+        .json({ message: "roomId & speakerId are required!" });
+    }
+
+    if (flag === "add") {
+      updatedRoom = await Room.findByIdAndUpdate(
+        roomId,
+        { $addToSet: { speakers: speakerId } },
+        { new: true }
+      );
+    } else if (flag === "remove") {
+      updatedRoom = await Room.findOneAndUpdate(
+        roomId,
+        { $pull: { speakers: speakerId } },
+        { new: true }
+      );
+    }
+
+    res.json({ status: "Ok" });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
   }
 };

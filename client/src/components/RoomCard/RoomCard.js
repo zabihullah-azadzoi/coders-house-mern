@@ -2,6 +2,14 @@ import React from "react";
 import styles from "./RoomCard.module.css";
 
 const RoomCard = ({ room, onRoom }) => {
+  const speakersArrayLengthHandler = (array) => {
+    if (array.length < 3) return array;
+    const fixedSizeArray = [];
+    fixedSizeArray[0] = array[0];
+    fixedSizeArray[1] = array[1];
+    return fixedSizeArray;
+  };
+
   return (
     <div
       className={`${styles.roomContainer} col-md-3 col-sm-12`}
@@ -9,7 +17,7 @@ const RoomCard = ({ room, onRoom }) => {
     >
       <h6>{room.title}</h6>
       <div className={`${styles.speakersContainer} mt-3 `}>
-        {room.speakers.map((speaker) => {
+        {speakersArrayLengthHandler(room.speakers).map((speaker) => {
           return (
             <div key={speaker._id} className="position-relative ">
               <img

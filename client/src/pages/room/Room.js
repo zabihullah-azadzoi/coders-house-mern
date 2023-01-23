@@ -15,8 +15,6 @@ const Room = () => {
   const { clients, provideRef, muteStatusHandler } = useWebRTC(user, roomId);
   const navigate = useNavigate();
 
-  console.log(clients);
-
   useEffect(() => {
     muteStatusHandler(mute, user._id);
   }, [mute, user, muteStatusHandler]);
@@ -40,6 +38,7 @@ const Room = () => {
 
   const goBackHandler = () => {
     navigate("/rooms");
+    // loadRooms();
   };
 
   return (
