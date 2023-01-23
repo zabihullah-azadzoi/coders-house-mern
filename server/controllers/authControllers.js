@@ -52,10 +52,7 @@ exports.verifyOtp = async (req, res) => {
 
     // 2. create user in DB
     let user = await User.findOne({ phone: phoneNumber });
-    if (user) {
-      return res.json({ message: "User already exist!" });
-    }
-    {
+    if (!user) {
       user = await new User({ phone: phoneNumber }).save();
     }
     // 3. generate jwt and send to client
@@ -74,7 +71,7 @@ exports.verifyOtp = async (req, res) => {
       httpOnly: true,
     });
 
-    res.json({ user, auth: true });
+    res.json({ user: formatUserData(user), auth: true });
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
@@ -123,7 +120,7 @@ exports.refreshTokenHandler = async (req, res) => {
     });
 
     // 8. send response
-    res.json({ user: formatUserData(req, existingUser), isAuth: true });
+    res.json({ user: formatUserData(existingUser), isAuth: true });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });

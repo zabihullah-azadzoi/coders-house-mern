@@ -27,23 +27,27 @@ const Nav = () => {
         <span className="fw-bold h4">Coders House</span>
       </div>
       <div className="d-flex align-items-center">
-        <div className="d-flex align-items-center">
-          <span className="me-3">{user?.name && user.name}</span>
-          <img
-            src={user?.avatar ? user.avatar : "/img/monkey.png"}
-            alt="profile"
-            className={`${styles.navImage} `}
-          />
-        </div>
-
         {isAuth && (
-          <button onClick={logoutHandler} className={`${styles.logoutButton} `}>
-            <img
-              src="/img/logout-button-arrow.png"
-              alt="logout-button-icon"
-              className={` `}
-            />
-          </button>
+          <>
+            <div className="d-flex align-items-center">
+              <span className="me-3">{user?.name && user.name}</span>
+              <img
+                src={user?.avatar ? user.avatar : "/img/monkey.png"}
+                alt="profile"
+                className={`${styles.navImage} `}
+              />
+            </div>
+            <button
+              onClick={logoutHandler}
+              className={`${styles.logoutButton} `}
+            >
+              <img
+                src="/img/logout-button-arrow.png"
+                alt="logout-button-icon"
+                className={` `}
+              />
+            </button>
+          </>
         )}
       </div>
     </div>

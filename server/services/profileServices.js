@@ -17,7 +17,7 @@ exports.imageConverter = (image) => {
   return imageName;
 };
 
-exports.formatUserData = (req, user) => {
+exports.formatUserData = (user) => {
   return {
     name: user.name,
     phone: user.phone,
