@@ -15,6 +15,8 @@ const Rooms = () => {
   const [topic, setTopic] = useState("");
   const [allRooms, setAllRooms] = useState([]);
 
+  console.log(allRooms);
+
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 

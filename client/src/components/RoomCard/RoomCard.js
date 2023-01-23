@@ -10,6 +10,10 @@ const RoomCard = ({ room, onRoom }) => {
     return fixedSizeArray;
   };
 
+  const randomColorGenerator = () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  };
+
   return (
     <div
       className={`${styles.roomContainer} col-md-3 col-sm-12`}
@@ -21,11 +25,12 @@ const RoomCard = ({ room, onRoom }) => {
           return (
             <div key={speaker._id} className="position-relative ">
               <img
-                src={speaker.image ? speaker.image : "/img/monkey.png"}
+                src={speaker.avatar ? speaker.avatar : "/img/monkey.png"}
                 alt="speaker avatar"
                 className={`${styles.speakerAvatar} ${
                   room.speakers.length === 1 && "position-static"
                 }`}
+                style={{ borderColor: randomColorGenerator() }}
               />
               <div
                 className={`${styles.speakerName} ${

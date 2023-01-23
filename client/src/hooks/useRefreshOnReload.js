@@ -9,6 +9,10 @@ const useRefreshOnReload = () => {
 
   const dispatch = useDispatch();
 
+  const randomColorGenerator = () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  };
+
   useEffect(() => {
     setIsLoading(true);
     autoRefreshHandler()
@@ -16,7 +20,11 @@ const useRefreshOnReload = () => {
         if (!res.data || !res.data.user) return;
 
         setIsLoading(false);
-        dispatch(setAuth(res.data));
+        dispatch(
+          setAuth({
+            user: { ...res.data.user, borderColor: randomColorGenerator() },
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);

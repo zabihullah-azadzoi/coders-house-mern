@@ -16,11 +16,19 @@ const StepOtp = () => {
   const { hash, phone } = useSelector((state) => state.auth.otp);
   const dispatch = useDispatch();
 
+  const randomColorGenerator = () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  };
+
   const verifyOtpHandler = () => {
     verifyOtp(otp, phone, hash)
       .then((res) => {
         if (res.data.user && res.data.auth) {
-          dispatch(setAuth({ user: res.data.user }));
+          dispatch(
+            setAuth({
+              user: { ...res.data.user, borderColor: randomColorGenerator() },
+            })
+          );
         }
         console.log(res.data);
       })

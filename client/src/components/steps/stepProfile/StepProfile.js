@@ -18,6 +18,10 @@ const StepProfile = () => {
 
   const dispatch = useDispatch();
 
+  const randomColorGenerator = () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  };
+
   const convertImageHandler = (e) => {
     const file = e.target.files[0];
 
@@ -35,7 +39,11 @@ const StepProfile = () => {
       .then((res) => {
         setIsLoading(false);
         if (res.data.user) {
-          dispatch(setAuth({ user: res.data.user }));
+          dispatch(
+            setAuth({
+              user: { ...res.data.user, borderColor: randomColorGenerator() },
+            })
+          );
         }
       })
       .catch((e) => {

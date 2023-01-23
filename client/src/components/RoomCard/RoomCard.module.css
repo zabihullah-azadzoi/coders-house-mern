@@ -8,7 +8,7 @@
 .speakerAvatar {
   width: 3rem;
   height: 3rem;
-  border: 2px solid green;
+  border: 2px solid;
   border-radius: 50%;
   position: absolute;
 }

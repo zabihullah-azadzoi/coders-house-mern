@@ -24,12 +24,20 @@ export const useWebRTC = (user, roomId) => {
     navigate("/rooms");
   };
 
-  const provideRef = (instance, clientId) => {
-    audioElementsRef.current[clientId] = instance;
+  useEffect(() => {
+    socketRef.current = socketConnection();
 
     //socket error handling
     socketRef.current.on("connect_error", (err) => socketErrorHandler(err));
     socketRef.current.on("connect_failed", (err) => socketErrorHandler(err));
+  }, []);
+
+  useEffect(() => {
+    clientsRef.current = clients;
+  }, [clients]);
+
+  const provideRef = (instance, clientId) => {
+    audioElementsRef.current[clientId] = instance;
   };
 
   const addNewClient = useCallback(
@@ -226,14 +234,6 @@ export const useWebRTC = (user, roomId) => {
     },
     [roomId]
   );
-
-  useEffect(() => {
-    socketRef.current = socketConnection();
-  }, []);
-
-  useEffect(() => {
-    clientsRef.current = clients;
-  }, [clients]);
 
   useEffect(() => {
     //mute/unmute events

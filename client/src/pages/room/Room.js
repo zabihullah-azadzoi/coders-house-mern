@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./Room.module.css";
 import { useSelector } from "react-redux";
 import { useWebRTC } from "../../hooks/useWebRTC";
@@ -10,10 +10,13 @@ import { toast } from "react-toastify";
 const Room = () => {
   const [room, setRoom] = useState("");
   const [mute, setMute] = useState(true);
+  const [borderColor, setBorderColor] = useState("");
   const { roomId } = useParams();
   const user = useSelector((state) => state.auth.user);
   const { clients, provideRef, muteStatusHandler } = useWebRTC(user, roomId);
   const navigate = useNavigate();
+
+  console.log(clients);
 
   useEffect(() => {
     muteStatusHandler(mute, user._id);
@@ -38,7 +41,6 @@ const Room = () => {
 
   const goBackHandler = () => {
     navigate("/rooms");
-    // loadRooms();
   };
 
   return (
@@ -91,6 +93,7 @@ const Room = () => {
                       className={styles.memberAvatar}
                       src={client.avatar ? client.avatar : "/img/monkey.png"}
                       alt="avatar"
+                      style={{ borderColor: client.borderColor }}
                     />
                     {client.isMute ? (
                       <img

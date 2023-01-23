@@ -35,6 +35,7 @@ const Nav = () => {
                 src={user?.avatar ? user.avatar : "/img/monkey.png"}
                 alt="profile"
                 className={`${styles.navImage} `}
+                style={{ borderColor: user?.borderColor }}
               />
             </div>
             <button
