@@ -86,6 +86,10 @@ export const useWebRTC = (user, roomId) => {
       }) => {
         addNewClient({ ...remoteUser, isMute: true }, () => {
           if (audioElementsRef.current[remoteUser._id]) {
+            console.log(
+              "here1",
+              audioElementsRef.current[remoteUser._id].volume
+            );
             audioElementsRef.current[remoteUser._id].volume = 0;
             audioElementsRef.current[remoteUser._id].srcObject = remoteStream;
           } else {
@@ -93,14 +97,15 @@ export const useWebRTC = (user, roomId) => {
             let settled = true;
             const interval = setInterval(() => {
               if (audioElementsRef.current[remoteUser._id]) {
+                console.log("here2", remoteUser._id);
                 audioElementsRef.current[remoteUser._id].volume = 0;
                 audioElementsRef.current[remoteUser._id].srcObject =
                   remoteStream;
 
                 settled = false;
               }
+              if (!settled) clearInterval(interval);
             }, 300);
-            if (!settled) clearInterval(interval);
           }
         });
       };
@@ -209,12 +214,26 @@ export const useWebRTC = (user, roomId) => {
     });
 
     const setMute = (mute, userId) => {
-      const remoteAudio = audioElementsRef.current[userId];
-      if (mute) {
-        remoteAudio.volume = 0;
-      } else {
-        remoteAudio.volume = 1;
+      if (userId !== user._id) {
+        let settled = false;
+        const interval = setInterval(() => {
+          if (audioElementsRef.current[userId]) {
+            if (mute) {
+              console.log("mute", mute, userId);
+              audioElementsRef.current[userId].volume = 0;
+            } else {
+              console.log("unmute", mute, userId);
+              audioElementsRef.current[userId].volume = 1;
+            }
+            settled = true;
+          }
+
+          if (settled) {
+            clearInterval(interval);
+          }
+        }, 200);
       }
+
       const clientIndex = clientsRef.current
         .map((client) => client._id)
         .indexOf(userId);

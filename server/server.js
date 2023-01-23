@@ -104,9 +104,10 @@ io.on("connection", (socket) => {
   };
 
   socket.on(ACTIONS.MUTE, ({ roomId, userId }) => {
+    if (!roomId || !userId) return;
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
 
-    clients.forEach((client) => {
+    clients?.forEach((client) => {
       io.to(client).emit(ACTIONS.MUTE, { userId });
     });
   });
@@ -114,7 +115,7 @@ io.on("connection", (socket) => {
   socket.on(ACTIONS.UN_MUTE, ({ roomId, userId }) => {
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
 
-    clients.forEach((client) => {
+    clients?.forEach((client) => {
       io.to(client).emit(ACTIONS.UN_MUTE, { userId });
     });
   });
