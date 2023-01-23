@@ -104,7 +104,7 @@ io.on("connection", (socket) => {
   };
 
   socket.on(ACTIONS.MUTE, ({ roomId, userId }) => {
-    if (!roomId || !userId) return;
+    console.log("server: ", roomId, userId);
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
 
     clients?.forEach((client) => {
