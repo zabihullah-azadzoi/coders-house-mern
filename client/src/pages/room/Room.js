@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Room.module.css";
 import { useSelector } from "react-redux";
 import { useWebRTC } from "../../hooks/useWebRTC";
@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 const Room = () => {
   const [room, setRoom] = useState("");
   const [mute, setMute] = useState(true);
-  const [borderColor, setBorderColor] = useState("");
   const { roomId } = useParams();
   const user = useSelector((state) => state.auth.user);
   const { clients, provideRef, muteStatusHandler } = useWebRTC(user, roomId);
