@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useStateWithCallback } from "./useStateWithCallback";
 import socketConnection from "../socket/index";
 import { addSpeaker } from "../http/roomRequests";
@@ -8,8 +8,9 @@ import freeice from "freeice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-export const useWebRTC = (user, roomId) => {
+export const useWebRTC = (user, roomId, roomCreator) => {
   const [clients, setClients] = useStateWithCallback([]);
+  // const [speakers, setSpeakers] = useState([]);
   const audioElementsRef = useRef({});
   const connectionsRef = useRef({});
   const userMediaStream = useRef();
@@ -38,6 +39,10 @@ export const useWebRTC = (user, roomId) => {
 
   const provideRef = (instance, clientId) => {
     audioElementsRef.current[clientId] = instance;
+  };
+
+  const raiseHandHandler = (client, roomId, roomCreator) => {
+    socketRef.current.emit("hand-raised", { client, roomId, roomCreator });
   };
 
   const addNewClient = useCallback(
@@ -236,6 +241,31 @@ export const useWebRTC = (user, roomId) => {
   );
 
   useEffect(() => {
+    // handling raisehand events
+    socketRef.current.on("hand-raised", ({ client }) => {
+      const response = window.confirm(`${client.name} wants to speak`);
+      if (response) {
+        const allClients = [...clients];
+        client.isSpeaking = true;
+        const indexOfClient = allClients.findIndex(
+          (cli) => cli._id === client._id
+        );
+        if (indexOfClient > -1) {
+          allClients.splice(indexOfClient, 1, client);
+          setClients(allClients);
+          socketRef.current.emit("hand-raise-confirmed", {
+            roomId,
+            allClients,
+          });
+        }
+      }
+    });
+
+    // on hand raise confirm
+    socketRef.current.on("hand-raise-confirmed", ({ allClients }) => {
+      setClients(allClients);
+    });
+
     //mute/unmute events
     socketRef.current.on(ACTIONS.MUTE, ({ userId }) => {
       setMute(true, userId);
@@ -260,13 +290,7 @@ export const useWebRTC = (user, roomId) => {
       socketRef.current.off(ACTIONS.MUTE);
       socketRef.current.off(ACTIONS.UN_MUTE);
     };
-  }, [
-    addIceCandidateHandler,
-    addNewPeer,
-    handleRemovePeer,
-    setMute,
-    handleSessionDescription,
-  ]);
+  }, [clients]);
 
   useEffect(() => {
     const getMediaStream = async () => {
@@ -276,14 +300,27 @@ export const useWebRTC = (user, roomId) => {
     };
     getMediaStream()
       .then(() => {
-        addNewClient({ ...user, isMute: true }, () => {
-          const localElement = audioElementsRef.current[user._id];
-          if (localElement) {
-            localElement.volume = 0;
-            localElement.srcObject = userMediaStream.current;
+        addNewClient(
+          {
+            ...user,
+            isMute: true,
+            isSpeaking: user._id === roomCreator ? true : false,
+          },
+          () => {
+            const localElement = audioElementsRef.current[user._id];
+            if (localElement) {
+              localElement.volume = 0;
+              localElement.srcObject = userMediaStream.current;
+            }
+            socketRef.current.emit(ACTIONS.JOIN, {
+              roomId,
+              user: {
+                ...user,
+                isSpeaking: user._id === roomCreator ? true : false,
+              },
+            });
           }
-          socketRef.current.emit(ACTIONS.JOIN, { roomId, user });
-        });
+        );
       })
       .catch((e) => console.log(e));
 
@@ -301,5 +338,6 @@ export const useWebRTC = (user, roomId) => {
     clients,
     provideRef,
     muteStatusHandler,
+    raiseHandHandler,
   };
 };

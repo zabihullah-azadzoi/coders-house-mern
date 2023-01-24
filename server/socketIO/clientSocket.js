@@ -67,8 +67,27 @@ module.exports = (io, socket) => {
     });
   };
 
-  socket.on(ACTIONS.MUTE, muteClientHandler);
-  socket.on(ACTIONS.UN_MUTE, unMuteClientHandler);
+  socket.on("hand-raised", ({ client, roomId, roomCreator }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+    const adminSocket = clients.find(
+      (cli) => peerConnections[cli]._id === roomCreator
+    );
+    if (adminSocket) {
+      console.log("hand raised event");
+      io.to(adminSocket).emit("hand-raised", { client });
+    }
+  });
+
+  socket.on("hand-raise-confirmed", ({ roomId, allClients }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+
+    clients?.forEach((client) => {
+      io.to(client).emit("hand-raise-confirmed", { allClients });
+    });
+  });
+
+  // socket.on(ACTIONS.MUTE, muteClientHandler);
+  // socket.on(ACTIONS.UN_MUTE, unMuteClientHandler);
   socket.on(ACTIONS.JOIN, joinClientHandler);
   socket.on(ACTIONS.LEAVE, handleLeave);
   socket.on("disconnecting", handleLeave);

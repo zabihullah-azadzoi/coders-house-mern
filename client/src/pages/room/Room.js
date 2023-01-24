@@ -3,7 +3,7 @@ import styles from "./Room.module.css";
 import { useSelector } from "react-redux";
 import { useWebRTC } from "../../hooks/useWebRTC";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getRoom } from "../../http/roomRequests";
 import { toast } from "react-toastify";
 
@@ -11,8 +11,10 @@ const Room = () => {
   const [room, setRoom] = useState("");
   const [mute, setMute] = useState(true);
   const { roomId } = useParams();
+  const { state: roomCreator } = useLocation();
   const user = useSelector((state) => state.auth.user);
-  const { clients, provideRef, muteStatusHandler } = useWebRTC(user, roomId);
+  const { clients, provideRef, muteStatusHandler, raiseHandHandler } =
+    useWebRTC(user, roomId, roomCreator);
   const navigate = useNavigate();
 
   console.log(clients);
@@ -24,7 +26,7 @@ const Room = () => {
   useEffect(() => {
     getRoom(roomId)
       .then((res) => {
-        setRoom(res.data.title);
+        setRoom(res.data);
       })
       .catch((e) =>
         toast.error(
@@ -58,9 +60,12 @@ const Room = () => {
       </div>
       <div className={styles.membersContainerWrapper}>
         <div className="d-flex justify-content-between">
-          <h6 className="fw-bold">{room}</h6>
+          <h6 className="fw-bold">{room.title}</h6>
           <div>
-            <span className={styles.emojiContainer}>
+            <span
+              className={styles.emojiContainer}
+              onClick={() => raiseHandHandler(user, roomId, room.creator._id)}
+            >
               <img
                 src="/img/raise-hand-emoji.png"
                 alt="vector"
@@ -77,24 +82,70 @@ const Room = () => {
             </span>
           </div>
         </div>
-        <div className="d-flex">
+        <div className="d-flex mb-5">
           {clients.length > 0 &&
-            clients.map((client) => {
-              return (
-                <div key={client._id} className={styles.memberContainer}>
-                  <audio
+            clients
+              .filter((cli) => cli.isSpeaking === true)
+              .map((client) => {
+                return (
+                  <div key={client._id} className={styles.memberContainer}>
+                    <audio
+                      ref={(instance) => provideRef(instance, client._id)}
+                      // controls
+                      autoPlay
+                    />
+                    <div className="position-relative">
+                      <img
+                        className={styles.memberAvatar}
+                        src={client.avatar ? client.avatar : "/img/monkey.png"}
+                        alt="avatar"
+                        style={{ borderColor: client.borderColor }}
+                      />
+                      {client.isMute ? (
+                        <img
+                          onClick={() => muteHandler(client._id)}
+                          src="/img/mute-icon.png"
+                          alt="avatar"
+                          className={styles.micIcon}
+                        />
+                      ) : (
+                        <img
+                          onClick={() => muteHandler(client._id)}
+                          src="/img/unmute-icon.png"
+                          alt="avatar"
+                          className={styles.micIcon}
+                        />
+                      )}
+                    </div>
+                    <h6>{client.name}</h6>
+                  </div>
+                );
+              })}
+        </div>
+        <div>
+          <h6>others in the room</h6>
+          <div className="d-flex ">
+            {clients.length > 0 &&
+              clients
+                .filter((cli) => cli.isSpeaking === false)
+                .map((client) => {
+                  return (
+                    <div key={client._id} className={styles.memberContainer}>
+                      {/* <audio
                     ref={(instance) => provideRef(instance, client._id)}
                     // controls
                     autoPlay
-                  />
-                  <div className="position-relative">
-                    <img
-                      className={styles.memberAvatar}
-                      src={client.avatar ? client.avatar : "/img/monkey.png"}
-                      alt="avatar"
-                      style={{ borderColor: client.borderColor }}
-                    />
-                    {client.isMute ? (
+                  /> */}
+                      <div className="position-relative">
+                        <img
+                          className={styles.memberAvatar}
+                          src={
+                            client.avatar ? client.avatar : "/img/monkey.png"
+                          }
+                          alt="avatar"
+                          style={{ borderColor: client.borderColor }}
+                        />
+                        {/* {client.isMute ? (
                       <img
                         onClick={() => muteHandler(client._id)}
                         src="/img/mute-icon.png"
@@ -108,12 +159,13 @@ const Room = () => {
                         alt="avatar"
                         className={styles.micIcon}
                       />
-                    )}
-                  </div>
-                  <h6>{client.name}</h6>
-                </div>
-              );
-            })}
+                    )} */}
+                      </div>
+                      <h6>{client.name}</h6>
+                    </div>
+                  );
+                })}
+          </div>
         </div>
       </div>
     </>

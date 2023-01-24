@@ -41,7 +41,7 @@ const Rooms = () => {
         setShowModal(false);
         setTopic("");
         getAllRoomsHandler();
-        navigate(`/room/${res.data._id}`);
+        navigate(`/room/${res.data._id}`, { state: user._id });
       })
       .catch((e) => toast.error("something went wrong!"));
   };
