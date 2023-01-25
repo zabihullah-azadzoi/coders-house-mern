@@ -67,34 +67,30 @@ module.exports = (io, socket) => {
     });
   };
 
-  socket.on("hand-raised", ({ client, roomId, roomCreator }) => {
+  const handRaiseHandler = ({ client, roomId, roomCreator }) => {
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
     const adminSocket = clients.find(
       (cli) => peerConnections[cli]._id === roomCreator
     );
     if (adminSocket) {
-      io.to(adminSocket).emit("hand-raised", { client, peerId: socket.id });
-    }
-  });
-
-  socket.on(
-    "hand-raise-confirmed",
-    ({ roomId, allClients, peerId, client }) => {
-      const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
-      peerConnections[peerId] = client;
-
-      console.log("peerConnection", peerConnections[peerId]);
-      console.log("peerId", peerId);
-      console.log("client", client);
-
-      clients?.forEach((client) => {
-        io.to(client).emit("hand-raise-confirmed", { allClients });
+      io.to(adminSocket).emit(ACTIONS.HAND_RAISE, {
+        client,
+        peerId: socket.id,
       });
     }
-  );
+  };
 
-  console.log("peer connections", peerConnections);
+  const handRaiseConfirmHandler = ({ roomId, allClients, peerId, client }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+    peerConnections[peerId] = client;
 
+    clients?.forEach((client) => {
+      io.to(client).emit(ACTIONS.HAND_RAISE_CONFIRM, { allClients });
+    });
+  };
+
+  socket.on(ACTIONS.HAND_RAISE, handRaiseHandler);
+  socket.on(ACTIONS.HAND_RAISE_CONFIRM, handRaiseConfirmHandler);
   socket.on(ACTIONS.MUTE, muteClientHandler);
   socket.on(ACTIONS.UN_MUTE, unMuteClientHandler);
   socket.on(ACTIONS.JOIN, joinClientHandler);

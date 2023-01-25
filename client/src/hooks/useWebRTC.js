@@ -42,7 +42,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
   };
 
   const raiseHandHandler = (client, roomId, roomCreator) => {
-    socketRef.current.emit("hand-raised", { client, roomId, roomCreator });
+    socketRef.current.emit(ACTIONS.HAND_RAISE, { client, roomId, roomCreator });
   };
 
   const addNewClient = useCallback(
@@ -242,7 +242,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
 
   useEffect(() => {
     // handling raisehand events
-    socketRef.current.on("hand-raised", ({ client, peerId }) => {
+    socketRef.current.on(ACTIONS.HAND_RAISE, ({ client, peerId }) => {
       const response = window.confirm(`${client.name} wants to speak`);
       if (response) {
         const allClients = [...clients];
@@ -252,7 +252,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
         );
         if (indexOfClient > -1) {
           allClients.splice(indexOfClient, 1, client);
-          socketRef.current.emit("hand-raise-confirmed", {
+          socketRef.current.emit(ACTIONS.HAND_RAISE_CONFIRM, {
             roomId,
             allClients,
             peerId,
@@ -263,13 +263,13 @@ export const useWebRTC = (user, roomId, roomCreator) => {
     });
 
     return () => {
-      socketRef.current.off("hand-raised");
+      socketRef.current.off(ACTIONS.HAND_RAISE);
     };
-  }, [clients, roomId]);
+  }, [clients]);
 
   useEffect(() => {
     // on hand raise confirm
-    socketRef.current.on("hand-raise-confirmed", ({ allClients }) => {
+    socketRef.current.on(ACTIONS.HAND_RAISE_CONFIRM, ({ allClients }) => {
       setClients(allClients);
     });
 
