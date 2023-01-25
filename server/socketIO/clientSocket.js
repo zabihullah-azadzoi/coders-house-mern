@@ -73,21 +73,30 @@ module.exports = (io, socket) => {
       (cli) => peerConnections[cli]._id === roomCreator
     );
     if (adminSocket) {
-      console.log("hand raised event");
-      io.to(adminSocket).emit("hand-raised", { client });
+      io.to(adminSocket).emit("hand-raised", { client, peerId: socket.id });
     }
   });
 
-  socket.on("hand-raise-confirmed", ({ roomId, allClients }) => {
-    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+  socket.on(
+    "hand-raise-confirmed",
+    ({ roomId, allClients, peerId, client }) => {
+      const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+      peerConnections[peerId] = client;
 
-    clients?.forEach((client) => {
-      io.to(client).emit("hand-raise-confirmed", { allClients });
-    });
-  });
+      console.log("peerConnection", peerConnections[peerId]);
+      console.log("peerId", peerId);
+      console.log("client", client);
 
-  // socket.on(ACTIONS.MUTE, muteClientHandler);
-  // socket.on(ACTIONS.UN_MUTE, unMuteClientHandler);
+      clients?.forEach((client) => {
+        io.to(client).emit("hand-raise-confirmed", { allClients });
+      });
+    }
+  );
+
+  console.log("peer connections", peerConnections);
+
+  socket.on(ACTIONS.MUTE, muteClientHandler);
+  socket.on(ACTIONS.UN_MUTE, unMuteClientHandler);
   socket.on(ACTIONS.JOIN, joinClientHandler);
   socket.on(ACTIONS.LEAVE, handleLeave);
   socket.on("disconnecting", handleLeave);

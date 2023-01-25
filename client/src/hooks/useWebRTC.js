@@ -242,7 +242,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
 
   useEffect(() => {
     // handling raisehand events
-    socketRef.current.on("hand-raised", ({ client }) => {
+    socketRef.current.on("hand-raised", ({ client, peerId }) => {
       const response = window.confirm(`${client.name} wants to speak`);
       if (response) {
         const allClients = [...clients];
@@ -252,15 +252,22 @@ export const useWebRTC = (user, roomId, roomCreator) => {
         );
         if (indexOfClient > -1) {
           allClients.splice(indexOfClient, 1, client);
-          setClients(allClients);
           socketRef.current.emit("hand-raise-confirmed", {
             roomId,
             allClients,
+            peerId,
+            client,
           });
         }
       }
     });
 
+    return () => {
+      socketRef.current.off("hand-raised");
+    };
+  }, [clients, roomId]);
+
+  useEffect(() => {
     // on hand raise confirm
     socketRef.current.on("hand-raise-confirmed", ({ allClients }) => {
       setClients(allClients);
@@ -316,6 +323,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
               roomId,
               user: {
                 ...user,
+                isMute: true,
                 isSpeaking: user._id === roomCreator ? true : false,
               },
             });

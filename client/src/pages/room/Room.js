@@ -64,7 +64,13 @@ const Room = () => {
           <div>
             <span
               className={styles.emojiContainer}
-              onClick={() => raiseHandHandler(user, roomId, room.creator._id)}
+              onClick={() =>
+                raiseHandHandler(
+                  { ...user, isMute: true },
+                  roomId,
+                  room.creator._id
+                )
+              }
             >
               <img
                 src="/img/raise-hand-emoji.png"
