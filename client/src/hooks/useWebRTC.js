@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { useStateWithCallback } from "./useStateWithCallback";
 import socketConnection from "../socket/index";
 import { addSpeaker } from "../http/roomRequests";
@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 
 export const useWebRTC = (user, roomId, roomCreator) => {
   const [clients, setClients] = useStateWithCallback([]);
-  // const [speakers, setSpeakers] = useState([]);
   const audioElementsRef = useRef({});
   const connectionsRef = useRef({});
   const userMediaStream = useRef();
@@ -18,6 +17,8 @@ export const useWebRTC = (user, roomId, roomCreator) => {
   const clientsRef = useRef([]);
 
   const navigate = useNavigate();
+
+  // new comment added to this list
 
   const socketErrorHandler = (err) => {
     console.log(err);
@@ -224,6 +225,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
           userMediaStream.current.getTracks()[0].enabled = !mute;
 
           if (mute && roomId && userId) {
+            console.log("from mute handler", roomId, userId);
             socketRef.current.emit(ACTIONS.MUTE, { roomId, userId });
           } else if (!mute && roomId && userId) {
             socketRef.current.emit(ACTIONS.UN_MUTE, { roomId, userId });

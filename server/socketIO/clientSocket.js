@@ -52,7 +52,7 @@ module.exports = (io, socket) => {
   };
 
   const muteClientHandler = ({ roomId, userId }) => {
-    const clients = Array.from(io?.sockets.adapter.rooms.get(roomId));
+    const clients = Array.from(io?.sockets.adapter.rooms.get(roomId) || []);
 
     clients?.forEach((client) => {
       io.to(client).emit(ACTIONS.MUTE, { userId });
