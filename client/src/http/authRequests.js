@@ -1,7 +1,7 @@
 import axiosInstance from ".";
 
 export const sendOtp = async (phoneNumber) => {
-  return await axiosInstance.post("api/send-otp", {
+  return await axiosInstance.post("/api/send-otp", {
     phoneNumber,
   });
 };

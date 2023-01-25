@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: process.env.REACT_APP_BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -20,7 +20,7 @@ axiosInstance.interceptors.response.use(
       if (error.response.status === 401 && !error.config._retry) {
         error.config._retry = true;
         try {
-          await axios.get("http://localhost:5000/api/refresh", {
+          await axios.get(`${process.env.REACT_APP_BASE_URL}/api/refresh`, {
             withCredentials: true,
           });
           return axiosInstance(originalRequest);
