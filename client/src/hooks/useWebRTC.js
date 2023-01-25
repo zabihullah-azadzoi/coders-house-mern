@@ -8,17 +8,28 @@ import freeice from "freeice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-export const useWebRTC = (user, roomId, roomCreator) => {
+export const useWebRTC = (
+  user,
+  roomId,
+  roomCreator,
+  setModalText,
+  confirmRequestFlag,
+  setOpenModal,
+  setConfirmRequestFlag
+) => {
   const [clients, setClients] = useStateWithCallback([]);
   const audioElementsRef = useRef({});
   const connectionsRef = useRef({});
   const userMediaStream = useRef();
   const socketRef = useRef();
   const clientsRef = useRef([]);
+  const confirmRequestFlagRef = useRef();
 
   const navigate = useNavigate();
 
-  // new comment added to this list
+  // useEffect(() => {
+  //   confirmRequestFlagRef.current = confirmRequestFlag;
+  // }, [confirmRequestFlag]);
 
   const socketErrorHandler = (err) => {
     console.log(err);
@@ -44,6 +55,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
 
   const raiseHandHandler = (client, roomId, roomCreator) => {
     socketRef.current.emit(ACTIONS.HAND_RAISE, { client, roomId, roomCreator });
+    toast.success("Joining request sent to the Admin of panel");
   };
 
   const addNewClient = useCallback(
@@ -245,8 +257,9 @@ export const useWebRTC = (user, roomId, roomCreator) => {
   useEffect(() => {
     // handling raisehand events
     socketRef.current.on(ACTIONS.HAND_RAISE, ({ client, peerId }) => {
-      const response = window.confirm(`${client.name} wants to speak`);
-      if (response) {
+      setModalText(`${client.name} wants to join the speakers board.`);
+      setOpenModal(true);
+      confirmRequestFlagRef.current = () => {
         const allClients = [...clients];
         client.isSpeaking = true;
         const indexOfClient = allClients.findIndex(
@@ -261,7 +274,8 @@ export const useWebRTC = (user, roomId, roomCreator) => {
             client,
           });
         }
-      }
+        setConfirmRequestFlag(0);
+      };
     });
 
     return () => {
@@ -299,7 +313,7 @@ export const useWebRTC = (user, roomId, roomCreator) => {
       socketRef.current.off(ACTIONS.MUTE);
       socketRef.current.off(ACTIONS.UN_MUTE);
     };
-  }, [clients]);
+  }, []);
 
   useEffect(() => {
     const getMediaStream = async () => {
@@ -349,5 +363,6 @@ export const useWebRTC = (user, roomId, roomCreator) => {
     provideRef,
     muteStatusHandler,
     raiseHandHandler,
+    confirmRequestFlagRef,
   };
 };

@@ -32,6 +32,7 @@
   height: calc(100vh - (160px + 84.5px));
   border-start-start-radius: 3rem;
   border-start-end-radius: 3rem;
+  overflow-y: auto;
 }
 
 .emojiContainer {

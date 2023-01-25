@@ -6,18 +6,38 @@ import { useWebRTC } from "../../hooks/useWebRTC";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getRoom } from "../../http/roomRequests";
 import { toast } from "react-toastify";
+import { Modal } from "antd";
 
 const Room = () => {
   const [room, setRoom] = useState("");
   const [mute, setMute] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [confirmRequestFlag, setConfirmRequestFlag] = useState(0);
   const { roomId } = useParams();
   const { state: roomCreator } = useLocation();
   const user = useSelector((state) => state.auth.user);
-  const { clients, provideRef, muteStatusHandler, raiseHandHandler } =
-    useWebRTC(user, roomId, roomCreator);
+  const {
+    clients,
+    provideRef,
+    muteStatusHandler,
+    raiseHandHandler,
+    confirmRequestFlagRef,
+  } = useWebRTC(
+    user,
+    roomId,
+    roomCreator,
+    setModalText,
+    confirmRequestFlag,
+    setOpenModal,
+    setConfirmRequestFlag
+  );
   const navigate = useNavigate();
 
-  console.log(clients);
+  const handleOk = () => {
+    confirmRequestFlagRef.current();
+    setOpenModal(false);
+  };
 
   useEffect(() => {
     muteStatusHandler(mute, user._id);
@@ -89,6 +109,15 @@ const Room = () => {
           </div>
         </div>
         <div className="d-flex mb-5">
+          <Modal
+            title="New Coder's joining request to the Board."
+            open={openModal}
+            onOk={handleOk}
+            okText="Confirm"
+            onCancel={() => setOpenModal(false)}
+          >
+            {modalText}
+          </Modal>
           {clients.length > 0 &&
             clients
               .filter((cli) => cli.isSpeaking === true)
@@ -97,7 +126,6 @@ const Room = () => {
                   <div key={client._id} className={styles.memberContainer}>
                     <audio
                       ref={(instance) => provideRef(instance, client._id)}
-                      // controls
                       autoPlay
                     />
                     <div className="position-relative">
@@ -130,18 +158,13 @@ const Room = () => {
         </div>
         <div>
           <h6>others in the room</h6>
-          <div className="d-flex ">
+          <div className="d-flex flex-wrap">
             {clients.length > 0 &&
               clients
                 .filter((cli) => cli.isSpeaking === false)
                 .map((client) => {
                   return (
                     <div key={client._id} className={styles.memberContainer}>
-                      {/* <audio
-                    ref={(instance) => provideRef(instance, client._id)}
-                    // controls
-                    autoPlay
-                  /> */}
                       <div className="position-relative">
                         <img
                           className={styles.memberAvatar}
@@ -151,21 +174,6 @@ const Room = () => {
                           alt="avatar"
                           style={{ borderColor: client.borderColor }}
                         />
-                        {/* {client.isMute ? (
-                      <img
-                        onClick={() => muteHandler(client._id)}
-                        src="/img/mute-icon.png"
-                        alt="avatar"
-                        className={styles.micIcon}
-                      />
-                    ) : (
-                      <img
-                        onClick={() => muteHandler(client._id)}
-                        src="/img/unmute-icon.png"
-                        alt="avatar"
-                        className={styles.micIcon}
-                      />
-                    )} */}
                       </div>
                       <h6>{client.name}</h6>
                     </div>

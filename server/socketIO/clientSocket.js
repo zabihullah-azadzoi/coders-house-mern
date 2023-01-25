@@ -31,7 +31,7 @@ module.exports = (io, socket) => {
     const rooms = socket.rooms;
 
     Array.from(rooms).forEach((room) => {
-      const clients = Array.from(io.sockets.adapter.rooms.get(room));
+      const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
 
       clients.forEach((client) => {
         io.to(client).emit(ACTIONS.REMOVE_PEER, {
@@ -52,7 +52,7 @@ module.exports = (io, socket) => {
   };
 
   const muteClientHandler = ({ roomId, userId }) => {
-    const clients = Array.from(io?.sockets.adapter.rooms.get(roomId) || []);
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
     clients?.forEach((client) => {
       io.to(client).emit(ACTIONS.MUTE, { userId });
@@ -60,7 +60,7 @@ module.exports = (io, socket) => {
   };
 
   const unMuteClientHandler = ({ roomId, userId }) => {
-    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
     clients?.forEach((client) => {
       io.to(client).emit(ACTIONS.UN_MUTE, { userId });
@@ -68,7 +68,7 @@ module.exports = (io, socket) => {
   };
 
   const handRaiseHandler = ({ client, roomId, roomCreator }) => {
-    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
     const adminSocket = clients.find(
       (cli) => peerConnections[cli]._id === roomCreator
     );
@@ -81,7 +81,7 @@ module.exports = (io, socket) => {
   };
 
   const handRaiseConfirmHandler = ({ roomId, allClients, peerId, client }) => {
-    const clients = Array.from(io.sockets.adapter.rooms.get(roomId));
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
     peerConnections[peerId] = client;
 
     clients?.forEach((client) => {
