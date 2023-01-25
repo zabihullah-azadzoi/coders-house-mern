@@ -13,7 +13,6 @@ const Room = () => {
   const [mute, setMute] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [modalText, setModalText] = useState("");
-  const [confirmRequestFlag, setConfirmRequestFlag] = useState(0);
   const { roomId } = useParams();
   const { state: roomCreator } = useLocation();
   const user = useSelector((state) => state.auth.user);
@@ -23,15 +22,7 @@ const Room = () => {
     muteStatusHandler,
     raiseHandHandler,
     confirmRequestFlagRef,
-  } = useWebRTC(
-    user,
-    roomId,
-    roomCreator,
-    setModalText,
-    confirmRequestFlag,
-    setOpenModal,
-    setConfirmRequestFlag
-  );
+  } = useWebRTC(user, roomId, roomCreator, setModalText, setOpenModal);
   const navigate = useNavigate();
 
   const handleOk = () => {
@@ -82,22 +73,25 @@ const Room = () => {
         <div className="d-flex justify-content-between">
           <h6 className="fw-bold">{room.title}</h6>
           <div>
-            <span
-              className={styles.emojiContainer}
-              onClick={() =>
-                raiseHandHandler(
-                  { ...user, isMute: true },
-                  roomId,
-                  room.creator._id
-                )
-              }
-            >
-              <img
-                src="/img/raise-hand-emoji.png"
-                alt="vector"
-                className={styles.leftArrow}
-              />
-            </span>
+            {clients &&
+              !clients.find((cli) => cli._id === user._id)?.isSpeaking && (
+                <span
+                  className={styles.emojiContainer}
+                  onClick={() =>
+                    raiseHandHandler(
+                      { ...user, isMute: true },
+                      roomId,
+                      room.creator._id
+                    )
+                  }
+                >
+                  <img
+                    src="/img/raise-hand-emoji.png"
+                    alt="vector"
+                    className={styles.leftArrow}
+                  />
+                </span>
+              )}
             <span className={styles.emojiContainer}>
               <img
                 src="/img/leave-quietly-emoji.png"

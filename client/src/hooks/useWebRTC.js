@@ -13,9 +13,7 @@ export const useWebRTC = (
   roomId,
   roomCreator,
   setModalText,
-  confirmRequestFlag,
-  setOpenModal,
-  setConfirmRequestFlag
+  setOpenModal
 ) => {
   const [clients, setClients] = useStateWithCallback([]);
   const audioElementsRef = useRef({});
@@ -26,10 +24,6 @@ export const useWebRTC = (
   const confirmRequestFlagRef = useRef();
 
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   confirmRequestFlagRef.current = confirmRequestFlag;
-  // }, [confirmRequestFlag]);
 
   const socketErrorHandler = (err) => {
     console.log(err);
@@ -274,7 +268,6 @@ export const useWebRTC = (
             client,
           });
         }
-        setConfirmRequestFlag(0);
       };
     });
 
