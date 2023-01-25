@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./RoomModal.module.css";
 import TextInput from "../shared/textInput/TextInput";
 
-const RoomModal = ({
-  onSetShowModal,
-  onChooseRoomType,
-  roomType,
-  topic,
-  onSetTopic,
-  onCreateRoom,
-}) => {
+import { useSelector } from "react-redux";
+
+const RoomModal = ({ onSetShowModal, onCreateRoom }) => {
+  const [roomType, setRoomType] = useState("open");
+  const [topic, setTopic] = useState("");
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <div className={`${styles.modalContainer}`}>
       <div className={`${styles.modalMask}`} onClick={onSetShowModal}></div>
@@ -22,7 +21,7 @@ const RoomModal = ({
         </button>
         <div className=" pb-5 mb-2 border-bottom border-secondary mt-2">
           <h6 className="mb-3">Enter the Topic to be discussed</h6>
-          <TextInput onChangeHandler={onSetTopic} value={topic} />
+          <TextInput onChangeHandler={setTopic} value={topic} />
         </div>
         <div className={`${styles.modalBody}`}>
           <p className="fw-bold">Room Type</p>
@@ -31,7 +30,7 @@ const RoomModal = ({
               className={`${styles.roomTypeContainer} ${
                 roomType === "open" ? styles.activeGroup : ""
               }`}
-              onClick={() => onChooseRoomType("open")}
+              onClick={() => setRoomType("open")}
             >
               <img src="/img/open-room.png" alt="open-room" />
               <span className="mt-1">open</span>
@@ -40,7 +39,7 @@ const RoomModal = ({
               className={`${styles.roomTypeContainer} ${
                 roomType === "social" ? styles.activeGroup : ""
               }`}
-              onClick={() => onChooseRoomType("social")}
+              onClick={() => setRoomType("social")}
             >
               <img src="/img/social-room.png" alt="social-room" />
               <span className="mt-1">social</span>
@@ -49,7 +48,7 @@ const RoomModal = ({
               className={`${styles.roomTypeContainer} ${
                 roomType === "private" ? styles.activeGroup : ""
               }`}
-              onClick={() => onChooseRoomType("private")}
+              onClick={() => setRoomType("private")}
             >
               <img src="/img/private-room.png" alt="private-room" />
               <span className="mt-1">private</span>
@@ -59,7 +58,10 @@ const RoomModal = ({
             <p className={`${styles.modalFooterText}`}>
               Start a room, open to everyone
             </p>
-            <button className={`${styles.modalButton}`} onClick={onCreateRoom}>
+            <button
+              className={`${styles.modalButton}`}
+              onClick={() => onCreateRoom(user, topic, roomType)}
+            >
               <img
                 src="/img/create-room-button-icon.png"
                 alt="create-room-button-icon"
@@ -73,4 +75,4 @@ const RoomModal = ({
   );
 };
 
-export default RoomModal;
+export default React.memo(RoomModal);

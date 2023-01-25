@@ -5,19 +5,13 @@ import RoomModal from "../../components/RoomModal/RoomModal";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-import { useSelector } from "react-redux";
-
 import { createRoom, getAllRooms } from "../../http/roomRequests";
 
 const Rooms = () => {
   const [showModal, setShowModal] = useState(false);
-  const [roomType, setRoomType] = useState("open");
-  const [topic, setTopic] = useState("");
+
   const [allRooms, setAllRooms] = useState([]);
 
-  console.log(allRooms);
-
-  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const getAllRoomsHandler = () => {
@@ -33,13 +27,12 @@ const Rooms = () => {
     getAllRoomsHandler();
   }, []);
 
-  const createRoomHandler = () => {
+  const createRoomHandler = (user, topic, roomType) => {
     if (!user?._id || !topic || !roomType) return;
     createRoom(topic, roomType, user._id)
       .then((res) => {
         toast.success("New room is Created");
         setShowModal(false);
-        setTopic("");
         getAllRoomsHandler();
         navigate(`/room/${res.data._id}`, { state: user._id });
       })
@@ -86,10 +79,6 @@ const Rooms = () => {
       {showModal && (
         <RoomModal
           onSetShowModal={() => setShowModal(false)}
-          roomType={roomType}
-          onChooseRoomType={setRoomType}
-          onSetTopic={setTopic}
-          topic={topic}
           onCreateRoom={createRoomHandler}
         />
       )}

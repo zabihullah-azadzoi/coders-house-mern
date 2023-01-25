@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styles from "./RoomCard.module.css";
 
 const RoomCard = ({ room, onRoom }) => {
-  const speakersArrayLengthHandler = (array) => {
+  const speakersArrayLengthHandler = useCallback((array) => {
     if (array.length < 3) return array;
     const fixedSizeArray = [];
     fixedSizeArray[0] = array[0];
     fixedSizeArray[1] = array[1];
     return fixedSizeArray;
-  };
+  }, []);
 
-  const randomColorGenerator = () => {
+  const randomColorGenerator = useCallback(() => {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-  };
+  }, []);
 
   return (
     <div
@@ -54,4 +54,4 @@ const RoomCard = ({ room, onRoom }) => {
   );
 };
 
-export default RoomCard;
+export default React.memo(RoomCard);
