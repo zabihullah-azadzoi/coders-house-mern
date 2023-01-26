@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useStateWithCallback } from "./useStateWithCallback";
 import socketConnection from "../socket/index";
-import { addSpeaker } from "../http/roomRequests";
+import { addSpeaker, deleteRoom } from "../http/roomRequests";
 
 import ACTIONS from "../actions";
 import freeice from "freeice";
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 export const useWebRTC = (
   user,
   roomId,
+  room,
   roomCreator,
   setModalText,
   setOpenModal
@@ -22,6 +23,7 @@ export const useWebRTC = (
   const socketRef = useRef();
   const clientsRef = useRef([]);
   const confirmRequestFlagRef = useRef();
+  const roomRef = useRef();
 
   const navigate = useNavigate();
 
@@ -30,6 +32,12 @@ export const useWebRTC = (
     toast.error("Couldn't connect to server, please try again later!");
     navigate("/rooms");
   };
+
+  useEffect(() => {
+    if (room !== "") {
+      roomRef.current = room;
+    }
+  }, [room]);
 
   useEffect(() => {
     socketRef.current = socketConnection();
@@ -164,10 +172,43 @@ export const useWebRTC = (
     []
   );
 
+  console.log("room", roomRef.current);
+
   const handleRemovePeer = useCallback(
     async ({ peerId, userId }) => {
+      console.log(roomRef.current, user);
+      if (userId === roomRef.current.creator._id) {
+        for (const connection in connectionsRef.current) {
+          await connectionsRef.current[connection].close();
+        }
+
+        connectionsRef.current = {};
+        audioElementsRef.current = {};
+
+        setClients([]);
+
+        deleteRoom(roomId)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((e) =>
+            toast.error(
+              e.response ? e.response.data.message : "something went wrong!"
+            )
+          );
+
+        toast.success(
+          "Admin of this Room, has closed the discussion. \n You will be directed to the Rooms in 3 seconds!"
+        );
+
+        setTimeout(() => {
+          navigate("/rooms", { replace: true });
+          window.location.reload();
+        }, 3000);
+      }
+
       if (connectionsRef.current[peerId]) {
-        connectionsRef.current[peerId].close();
+        await connectionsRef.current[peerId].close();
       }
 
       delete connectionsRef.current[peerId];
@@ -178,7 +219,9 @@ export const useWebRTC = (
       });
 
       addSpeaker(roomId, userId, "remove")
-        .then((res) => {})
+        .then((res) => {
+          console.log("response", res.data);
+        })
         .catch((e) =>
           toast.error(
             e.response ? e.response.data.message : "something went wrong!"
@@ -277,6 +320,41 @@ export const useWebRTC = (
   }, [clients]);
 
   useEffect(() => {
+    socketRef.current.on("disconnected", ({ socketId }) => {
+      console.log(socketId);
+    });
+
+    // socketRef.current.on("end-room", async ({ peerId, roomCreatorId }) => {
+    // for (const connection in connectionsRef.current) {
+    //   await connectionsRef.current[connection].close();
+    // }
+
+    // connectionsRef.current = {};
+    // audioElementsRef.current = {};
+
+    // setClients([]);
+
+    // if (user._id === roomCreatorId) {
+    //   deleteRoom(roomId)
+    //     .then((res) => {
+    //       console.log(res);
+    //     })
+    //     .catch((e) =>
+    //       toast.error(
+    //         e.response ? e.response.data.message : "something went wrong!"
+    //       )
+    //     );
+    // } else {
+    //   toast.success(
+    //     "Admin of this Room, has closed the discussion. \n You will be directed to the Rooms in 3 seconds!"
+    //   );
+
+    //   setTimeout(() => {
+    //     navigate("/rooms");
+    //   }, 3000);
+    // }
+    // });
+
     // on hand raise confirm
     socketRef.current.on(ACTIONS.HAND_RAISE_CONFIRM, ({ allClients }) => {
       setClients(allClients);
@@ -347,7 +425,8 @@ export const useWebRTC = (
       userMediaStream.current.getTracks().forEach((track) => {
         track.stop();
       });
-      socketRef.current.emit(ACTIONS.LEAVE, { roomId });
+
+      socketRef.current.emit(ACTIONS.LEAVE, { room, user });
     };
   }, []);
 

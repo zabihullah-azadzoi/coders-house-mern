@@ -10,6 +10,8 @@ const RoomCard = ({ room, onRoom }) => {
     return fixedSizeArray;
   }, []);
 
+  console.log(room.speakers);
+
   const randomColorGenerator = useCallback(() => {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   }, []);
@@ -25,7 +27,7 @@ const RoomCard = ({ room, onRoom }) => {
           return (
             <div key={speaker._id} className="position-relative ">
               <img
-                src={speaker.avatar ? speaker.avatar : "/img/monkey.png"}
+                src={speaker.image ? speaker.image : "/img/monkey.png"}
                 alt="speaker avatar"
                 className={`${styles.speakerAvatar} ${
                   room.speakers.length === 1 && "position-static"

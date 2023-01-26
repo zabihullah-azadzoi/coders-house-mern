@@ -67,7 +67,7 @@ exports.roomSpeakersHandler = async (req, res) => {
         { new: true }
       );
     } else if (flag === "remove") {
-      updatedRoom = await Room.findOneAndUpdate(
+      updatedRoom = await Room.findByIdAndUpdate(
         roomId,
         { $pull: { speakers: speakerId } },
         { new: true }
@@ -75,6 +75,22 @@ exports.roomSpeakersHandler = async (req, res) => {
     }
 
     res.json({ status: "Ok" });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+};
+
+exports.deleteRoom = async (req, res) => {
+  try {
+    const roomId = req.params.roomId;
+    if (!roomId) return res.status(400).json({ message: "Invalid RoomId!" });
+    const deletedRoom = await Room.findByIdAndDelete(roomId);
+    if (!deletedRoom) {
+      return res
+        .status(404)
+        .json({ message: "No room was found, with provided ID!" });
+    }
+    res.json({ message: "OK" });
   } catch (e) {
     res.status(400).json({ message: e.message });
   }

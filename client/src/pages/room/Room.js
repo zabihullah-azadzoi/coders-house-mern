@@ -22,7 +22,7 @@ const Room = () => {
     muteStatusHandler,
     raiseHandHandler,
     confirmRequestFlagRef,
-  } = useWebRTC(user, roomId, roomCreator, setModalText, setOpenModal);
+  } = useWebRTC(user, roomId, room, roomCreator, setModalText, setOpenModal);
   const navigate = useNavigate();
 
   const handleOk = () => {
@@ -52,7 +52,8 @@ const Room = () => {
   };
 
   const goBackHandler = () => {
-    navigate("/rooms");
+    navigate("/rooms", { replace: true });
+    window.location.reload();
   };
 
   return (

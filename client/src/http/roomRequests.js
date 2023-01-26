@@ -15,3 +15,7 @@ export const getRoom = async (roomId) => {
 export const addSpeaker = async (roomId, speakerId, flag) => {
   return await axiosInstance.patch(`/api/rooms/${roomId}`, { speakerId, flag });
 };
+
+export const deleteRoom = async (roomId) => {
+  return await axiosInstance.delete(`/api/rooms/${roomId}`);
+};

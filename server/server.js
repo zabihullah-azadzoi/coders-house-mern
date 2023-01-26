@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const http = require("http");
 const cors = require("cors");
+const morgan = require("morgan");
 const socketio = require("socket.io");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
@@ -16,7 +17,7 @@ const clientSocket = require("./socketIO/clientSocket");
 
 //handling uncaught exceptions (Synchronous)
 process.on("uncaughtException", (error) => {
-  console.log(error.name, error.message);
+  console.log(error.name, error);
   console.log("shutting down the server...!");
   process.exit(1); //shutting down the application
 });
@@ -24,6 +25,7 @@ process.on("uncaughtException", (error) => {
 const app = express();
 const server = http.createServer(app);
 
+app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json({ limit: "8mb" }));
@@ -54,7 +56,7 @@ const serverConnection = server.listen(port, () => {
 
 //handling unhandled promise (Asynchronous) rejections
 process.on("unhandledRejection", (error) => {
-  console.log(error.name, error.message);
+  console.log(error.name, error);
   console.log("shutting down the server...!");
   serverConnection.close(() => {
     //closing the server

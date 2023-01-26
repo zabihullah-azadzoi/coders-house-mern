@@ -27,12 +27,30 @@ module.exports = (io, socket) => {
   };
 
   // leaving the room
-  const handleLeave = ({ roomId }) => {
-    const rooms = socket.rooms;
+  const handleLeave = () => {
+    // if (room?.creator._id === peerConnections[socket.id]._id) {
+    //   const clients = Array.from(io.sockets.adapter.rooms.get(room._id) || []);
 
+    //   clients.forEach((client) => {
+    //     if (client === socket.id) {
+    //       socket.emit(socket.id).emit("end-room", {
+    //         peerId: client,
+    //         roomCreatorId: room.creator._id,
+    //       });
+    //       socket.leave(room._id);
+    //     } else {
+    //       io.to(client).emit("end-room", {
+    //         peerId: client,
+    //         roomCreatorId: room.creator._id,
+    //       });
+    //       client.leave(room._id);
+    //     }
+    //     delete peerConnections[client];
+    //   });
+    // } else {
+    const rooms = socket.rooms;
     Array.from(rooms).forEach((room) => {
       const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
-
       clients.forEach((client) => {
         io.to(client).emit(ACTIONS.REMOVE_PEER, {
           peerId: socket.id,
@@ -49,6 +67,7 @@ module.exports = (io, socket) => {
     });
 
     delete peerConnections[socket.id];
+    // }
   };
 
   const muteClientHandler = ({ roomId, userId }) => {
@@ -88,6 +107,25 @@ module.exports = (io, socket) => {
       io.to(client).emit(ACTIONS.HAND_RAISE_CONFIRM, { allClients });
     });
   };
+
+  // socket.on("end-room", ({ room, user }) => {
+  //   const clients = Array.from(io.sockets.adapter.rooms.get(room._id) || []);
+
+  //   clients.forEach((client) => {
+  //     if (client === socket.id) {
+  //       socket.emit(socket.id).emit("end-room", { peerId: client });
+  //       socket.leave(room._id);
+  //     } else {
+  //       io.to(client).emit("end-room", { peerId: client });
+  //       client.leave(room._id);
+  //     }
+  //     delete peerConnections[client];
+  //   });
+  // });
+
+  socket.on("disconnect", () => {
+    socket.emit("disconnected", { socketId: socket.id });
+  });
 
   socket.on(ACTIONS.HAND_RAISE, handRaiseHandler);
   socket.on(ACTIONS.HAND_RAISE_CONFIRM, handRaiseConfirmHandler);
