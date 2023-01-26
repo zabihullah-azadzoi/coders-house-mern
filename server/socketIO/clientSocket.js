@@ -1,5 +1,8 @@
 const ACTIONS = require("../actions");
-const Room = require("../models/Room");
+const {
+  addSpeakerToDb,
+  deleteUpdateRoom,
+} = require("../services/socketDBServices");
 
 const peerConnections = {};
 
@@ -29,14 +32,7 @@ module.exports = (io, socket) => {
     socket.join(roomId);
 
     // add new user to room's speakers array in DB
-    try {
-      if (user._id === user.roomCreatorId) return;
-      await Room.findByIdAndUpdate(user.roomId, {
-        $addToSet: { speakers: user._id },
-      });
-    } catch (e) {
-      console.log("add socket join to DB ERROR: ", error);
-    }
+    addSpeakerToDb(user);
   };
 
   // leaving the room
@@ -64,18 +60,7 @@ module.exports = (io, socket) => {
     });
 
     // updating the speakers array in DB while user is leaving
-    if (!user) return;
-    try {
-      if (user._id === user.roomCreatorId) {
-        await Room.findByIdAndDelete(user.roomId);
-      } else {
-        await Room.findByIdAndUpdate(user.roomId, {
-          $pull: { speakers: user._id },
-        });
-      }
-    } catch (error) {
-      console.log("delete socket Room Error", error);
-    }
+    deleteUpdateRoom(user);
 
     delete peerConnections[socket.id];
   };
