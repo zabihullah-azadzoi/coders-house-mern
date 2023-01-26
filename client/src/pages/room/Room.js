@@ -13,6 +13,7 @@ const Room = () => {
   const [mute, setMute] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [mics, setMics] = useState([]);
   const { roomId } = useParams();
   const { state: roomCreator } = useLocation();
   const user = useSelector((state) => state.auth.user);
@@ -55,6 +56,18 @@ const Room = () => {
     navigate("/rooms", { replace: true });
     window.location.reload();
   };
+
+  useEffect(() => {
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      const allAvailableMics = [];
+      devices.forEach((device) => {
+        if (device.kind === "audioinput" && device.label !== "Default") {
+          allAvailableMics.push(device.label);
+        }
+      });
+      setMics(allAvailableMics);
+    });
+  }, []);
 
   return (
     <>
@@ -176,6 +189,20 @@ const Room = () => {
                 })}
           </div>
         </div>
+      </div>
+      <div className={styles.micsContainer}>
+        <img
+          // onClick={() => muteHandler(client._id)}
+          src="/img/mute-icon.png"
+          alt="avatar"
+          className={`${styles.micIcon} ${styles.mainMic} position-static`}
+        />
+        <select className={styles.selectMenu}>
+          {mics.map((mic) => {
+            return <option key={mic}>{mic}</option>;
+          })}
+        </select>
+        <span className={styles.endRoomSpan}>End the room</span>
       </div>
     </>
   );

@@ -55,3 +55,39 @@
   border-radius: 10px;
   cursor: pointer;
 }
+
+.micsContainer {
+  position: absolute;
+  width: fit-content;
+  background-color: #141216;
+  bottom: 2rem;
+  left: 50%;
+  padding: 0.7rem 1rem;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 2rem;
+}
+
+.mainMic {
+  position: static;
+  border-radius: 13px;
+  height: 1.5rem;
+  padding: 6px;
+}
+.endRoomSpan {
+  cursor: pointer;
+  color: rgb(255, 48, 48);
+  font-size: 1.1rem;
+}
+
+.selectMenu {
+  color: #bebcc0;
+  border: none;
+  outline: none;
+  background-color: #292829;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.7rem;
+  margin: 0 2rem;
+}
