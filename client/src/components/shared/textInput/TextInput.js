@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./TextInput.module.css";
 
-const TextInput = ({ placeholder, value, onChangeHandler }) => {
+const TextInput = ({ placeholder, value, onChangeHandler, ...props }) => {
   return (
     <input
       placeholder={placeholder}
@@ -9,6 +9,7 @@ const TextInput = ({ placeholder, value, onChangeHandler }) => {
       required
       value={value}
       onChange={(e) => onChangeHandler(e.target.value)}
+      {...props}
     />
   );
 };

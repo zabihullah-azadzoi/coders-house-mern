@@ -9,6 +9,12 @@ const RoomModal = ({ onSetShowModal, onCreateRoom }) => {
   const [topic, setTopic] = useState("");
   const { user } = useSelector((state) => state.auth);
 
+  const enterKeyHandler = (e) => {
+    if (e.code === "Enter") {
+      onCreateRoom(user, topic, roomType);
+    }
+  };
+
   return (
     <div className={`${styles.modalContainer}`}>
       <div className={`${styles.modalMask}`} onClick={onSetShowModal}></div>
@@ -21,7 +27,12 @@ const RoomModal = ({ onSetShowModal, onCreateRoom }) => {
         </button>
         <div className=" pb-5 mb-2 border-bottom border-secondary mt-2">
           <h6 className="mb-3">Enter the Topic to be discussed</h6>
-          <TextInput onChangeHandler={setTopic} value={topic} />
+          <TextInput
+            placeholder="Your topic goes here..."
+            onChangeHandler={setTopic}
+            value={topic}
+            onKeyDown={enterKeyHandler}
+          />
         </div>
         <div className={`${styles.modalBody}`}>
           <p className="fw-bold">Room Type</p>

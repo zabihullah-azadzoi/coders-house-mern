@@ -92,7 +92,7 @@ const Room = () => {
                   />
                 </span>
               )}
-            <span className={styles.emojiContainer}>
+            <span className={styles.emojiContainer} onClick={goBackHandler}>
               <img
                 src="/img/leave-quietly-emoji.png"
                 alt="vector"
