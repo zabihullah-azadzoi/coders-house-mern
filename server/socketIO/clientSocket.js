@@ -1,4 +1,5 @@
 const ACTIONS = require("../actions");
+const Room = require("../models/Room");
 
 const peerConnections = {};
 
@@ -6,6 +7,8 @@ module.exports = (io, socket) => {
   // joining a room and creating new peer connection
   const joinClientHandler = ({ roomId, user }) => {
     peerConnections[socket.id] = user;
+
+    console.log("peerConnections", peerConnections);
 
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
@@ -27,27 +30,10 @@ module.exports = (io, socket) => {
   };
 
   // leaving the room
-  const handleLeave = () => {
-    // if (room?.creator._id === peerConnections[socket.id]._id) {
-    //   const clients = Array.from(io.sockets.adapter.rooms.get(room._id) || []);
+  const handleLeave = async () => {
+    const user = peerConnections[socket.id];
+    console.log("socket user", user);
 
-    //   clients.forEach((client) => {
-    //     if (client === socket.id) {
-    //       socket.emit(socket.id).emit("end-room", {
-    //         peerId: client,
-    //         roomCreatorId: room.creator._id,
-    //       });
-    //       socket.leave(room._id);
-    //     } else {
-    //       io.to(client).emit("end-room", {
-    //         peerId: client,
-    //         roomCreatorId: room.creator._id,
-    //       });
-    //       client.leave(room._id);
-    //     }
-    //     delete peerConnections[client];
-    //   });
-    // } else {
     const rooms = socket.rooms;
     Array.from(rooms).forEach((room) => {
       const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
@@ -66,8 +52,21 @@ module.exports = (io, socket) => {
       socket.leave(room);
     });
 
+    // updating the speakers array in DB while user is leaving
+    if (!user) return;
+    try {
+      if (user._id === user.roomCreatorId) {
+        await Room.findByIdAndDelete(user.roomId);
+      } else {
+        await Room.findByIdAndUpdate(user.roomId, {
+          $pull: { speakers: user._id },
+        });
+      }
+    } catch (error) {
+      console.log("delete socket Room Error", error);
+    }
+
     delete peerConnections[socket.id];
-    // }
   };
 
   const muteClientHandler = ({ roomId, userId }) => {
@@ -123,9 +122,9 @@ module.exports = (io, socket) => {
   //   });
   // });
 
-  socket.on("disconnect", () => {
-    socket.emit("disconnected", { socketId: socket.id });
-  });
+  // socket.on("disconnect", () => {
+  //   socket.emit("disconnected", { socketId: socket.id });
+  // });
 
   socket.on(ACTIONS.HAND_RAISE, handRaiseHandler);
   socket.on(ACTIONS.HAND_RAISE_CONFIRM, handRaiseConfirmHandler);

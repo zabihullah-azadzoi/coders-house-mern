@@ -187,15 +187,15 @@ export const useWebRTC = (
 
         setClients([]);
 
-        deleteRoom(roomId)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((e) =>
-            toast.error(
-              e.response ? e.response.data.message : "something went wrong!"
-            )
-          );
+        // deleteRoom(roomId)
+        //   .then((res) => {
+        //     console.log(res);
+        //   })
+        //   .catch((e) =>
+        //     toast.error(
+        //       e.response ? e.response.data.message : "something went wrong!"
+        //     )
+        //   );
 
         toast.success(
           "Admin of this Room, has closed the discussion. \n You will be directed to the Rooms in 3 seconds!"
@@ -218,15 +218,15 @@ export const useWebRTC = (
         return prevState.filter((client) => client._id !== userId);
       });
 
-      addSpeaker(roomId, userId, "remove")
-        .then((res) => {
-          console.log("response", res.data);
-        })
-        .catch((e) =>
-          toast.error(
-            e.response ? e.response.data.message : "something went wrong!"
-          )
-        );
+      // addSpeaker(roomId, userId, "remove")
+      //   .then((res) => {
+      //     console.log("response", res.data);
+      //   })
+      //   .catch((e) =>
+      //     toast.error(
+      //       e.response ? e.response.data.message : "something went wrong!"
+      //     )
+      //   );
     },
     [setClients]
   );
@@ -406,14 +406,24 @@ export const useWebRTC = (
               localElement.volume = 0;
               localElement.srcObject = userMediaStream.current;
             }
-            socketRef.current.emit(ACTIONS.JOIN, {
-              roomId,
-              user: {
-                ...user,
-                isMute: true,
-                isSpeaking: user._id === roomCreator ? true : false,
-              },
-            });
+
+            let settled = false;
+            const interval = setInterval(() => {
+              if (roomRef.current) {
+                socketRef.current.emit(ACTIONS.JOIN, {
+                  roomId,
+                  user: {
+                    ...user,
+                    isMute: true,
+                    isSpeaking: user._id === roomCreator ? true : false,
+                    roomId: roomId,
+                    roomCreatorId: roomRef.current.creator._id,
+                  },
+                });
+                settled = true;
+              }
+              if (settled) clearInterval(interval);
+            }, 200);
           }
         );
       })
