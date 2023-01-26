@@ -1,7 +1,6 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useStateWithCallback } from "./useStateWithCallback";
 import socketConnection from "../socket/index";
-import { addSpeaker, deleteRoom } from "../http/roomRequests";
 
 import ACTIONS from "../actions";
 import freeice from "freeice";
@@ -34,18 +33,18 @@ export const useWebRTC = (
   };
 
   useEffect(() => {
-    if (room !== "") {
-      roomRef.current = room;
-    }
-  }, [room]);
-
-  useEffect(() => {
     socketRef.current = socketConnection();
 
     //socket error handling
     socketRef.current.on("connect_error", (err) => socketErrorHandler(err));
     socketRef.current.on("connect_failed", (err) => socketErrorHandler(err));
   }, []);
+
+  useEffect(() => {
+    if (room !== "") {
+      roomRef.current = room;
+    }
+  }, [room]);
 
   useEffect(() => {
     clientsRef.current = clients;
@@ -66,16 +65,6 @@ export const useWebRTC = (
 
       if (existingClient === undefined) {
         setClients((prevState) => [...prevState, client], cb);
-
-        if (client._id !== user._id) {
-          addSpeaker(roomId, client._id, "add")
-            .then((res) => {})
-            .catch((e) =>
-              toast.error(
-                e.response ? e.response.data.message : "something went wrong!"
-              )
-            );
-        }
       }
     },
     [clients, setClients]
@@ -172,11 +161,8 @@ export const useWebRTC = (
     []
   );
 
-  console.log("room", roomRef.current);
-
   const handleRemovePeer = useCallback(
     async ({ peerId, userId }) => {
-      console.log(roomRef.current, user);
       if (userId === roomRef.current.creator._id) {
         for (const connection in connectionsRef.current) {
           await connectionsRef.current[connection].close();
@@ -187,16 +173,6 @@ export const useWebRTC = (
 
         setClients([]);
 
-        // deleteRoom(roomId)
-        //   .then((res) => {
-        //     console.log(res);
-        //   })
-        //   .catch((e) =>
-        //     toast.error(
-        //       e.response ? e.response.data.message : "something went wrong!"
-        //     )
-        //   );
-
         toast.success(
           "Admin of this Room, has closed the discussion. \n You will be directed to the Rooms in 3 seconds!"
         );
@@ -205,28 +181,18 @@ export const useWebRTC = (
           navigate("/rooms", { replace: true });
           window.location.reload();
         }, 3000);
+      } else {
+        if (connectionsRef.current[peerId]) {
+          await connectionsRef.current[peerId].close();
+        }
+
+        delete connectionsRef.current[peerId];
+        delete audioElementsRef.current[peerId];
+
+        setClients((prevState) => {
+          return prevState.filter((client) => client._id !== userId);
+        });
       }
-
-      if (connectionsRef.current[peerId]) {
-        await connectionsRef.current[peerId].close();
-      }
-
-      delete connectionsRef.current[peerId];
-      delete audioElementsRef.current[peerId];
-
-      setClients((prevState) => {
-        return prevState.filter((client) => client._id !== userId);
-      });
-
-      // addSpeaker(roomId, userId, "remove")
-      //   .then((res) => {
-      //     console.log("response", res.data);
-      //   })
-      //   .catch((e) =>
-      //     toast.error(
-      //       e.response ? e.response.data.message : "something went wrong!"
-      //     )
-      //   );
     },
     [setClients]
   );
@@ -274,7 +240,6 @@ export const useWebRTC = (
           userMediaStream.current.getTracks()[0].enabled = !mute;
 
           if (mute && roomId && userId) {
-            console.log("from mute handler", roomId, userId);
             socketRef.current.emit(ACTIONS.MUTE, { roomId, userId });
           } else if (!mute && roomId && userId) {
             socketRef.current.emit(ACTIONS.UN_MUTE, { roomId, userId });
@@ -320,41 +285,6 @@ export const useWebRTC = (
   }, [clients]);
 
   useEffect(() => {
-    socketRef.current.on("disconnected", ({ socketId }) => {
-      console.log(socketId);
-    });
-
-    // socketRef.current.on("end-room", async ({ peerId, roomCreatorId }) => {
-    // for (const connection in connectionsRef.current) {
-    //   await connectionsRef.current[connection].close();
-    // }
-
-    // connectionsRef.current = {};
-    // audioElementsRef.current = {};
-
-    // setClients([]);
-
-    // if (user._id === roomCreatorId) {
-    //   deleteRoom(roomId)
-    //     .then((res) => {
-    //       console.log(res);
-    //     })
-    //     .catch((e) =>
-    //       toast.error(
-    //         e.response ? e.response.data.message : "something went wrong!"
-    //       )
-    //     );
-    // } else {
-    //   toast.success(
-    //     "Admin of this Room, has closed the discussion. \n You will be directed to the Rooms in 3 seconds!"
-    //   );
-
-    //   setTimeout(() => {
-    //     navigate("/rooms");
-    //   }, 3000);
-    // }
-    // });
-
     // on hand raise confirm
     socketRef.current.on(ACTIONS.HAND_RAISE_CONFIRM, ({ allClients }) => {
       setClients(allClients);

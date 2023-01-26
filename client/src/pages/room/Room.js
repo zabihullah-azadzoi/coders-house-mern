@@ -72,7 +72,7 @@ const Room = () => {
       </div>
       <div className={styles.membersContainerWrapper}>
         <div className="d-flex justify-content-between">
-          <h6 className="fw-bold">{room.title}</h6>
+          <h6 className="fw-bold">{room?.title}</h6>
           <div>
             {clients &&
               !clients.find((cli) => cli._id === user._id)?.isSpeaking && (

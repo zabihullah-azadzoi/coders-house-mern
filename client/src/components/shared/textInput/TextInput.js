@@ -10,6 +10,7 @@ const TextInput = ({ placeholder, value, onChangeHandler, ...props }) => {
       value={value}
       onChange={(e) => onChangeHandler(e.target.value)}
       {...props}
+      autoFocus={true}
     />
   );
 };
