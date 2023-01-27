@@ -3,6 +3,7 @@ import styles from "./Nav.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHands } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
+import { Tooltip } from "antd";
 
 import { logoutHandlerRequest } from "../../../http/authRequests";
 import { useSelector, useDispatch } from "react-redux";
@@ -31,23 +32,27 @@ const Nav = () => {
           <>
             <div className="d-flex align-items-center">
               <span className="me-3">{user?.name && user.name}</span>
-              <img
-                src={user?.avatar ? user.avatar : "/img/monkey.png"}
-                alt="profile"
-                className={`${styles.navImage} `}
-                style={{ borderColor: user?.borderColor }}
-              />
+              <Tooltip title="Profile">
+                <img
+                  src={user?.avatar ? user.avatar : "/img/monkey.png"}
+                  alt="profile"
+                  className={`${styles.navImage} `}
+                  style={{ borderColor: user?.borderColor }}
+                />
+              </Tooltip>
             </div>
-            <button
-              onClick={logoutHandler}
-              className={`${styles.logoutButton} `}
-            >
-              <img
-                src="/img/logout-button-arrow.png"
-                alt="logout-button-icon"
-                className={` `}
-              />
-            </button>
+            <Tooltip title="Logout">
+              <button
+                onClick={logoutHandler}
+                className={`${styles.logoutButton} `}
+              >
+                <img
+                  src="/img/logout-button-arrow.png"
+                  alt="logout-button-icon"
+                  className={` `}
+                />
+              </button>
+            </Tooltip>
           </>
         )}
       </div>

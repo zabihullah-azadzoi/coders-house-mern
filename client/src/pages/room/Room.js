@@ -6,7 +6,7 @@ import { useWebRTC } from "../../hooks/useWebRTC";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getRoom } from "../../http/roomRequests";
 import { toast } from "react-toastify";
-import { Modal } from "antd";
+import { Modal, Tooltip } from "antd";
 
 const Room = () => {
   const [room, setRoom] = useState("");
@@ -195,34 +195,42 @@ const Room = () => {
       {clients?.find((cli) => cli._id === user._id)?.isSpeaking && (
         <div className={styles.micsContainer}>
           {clients?.find((cli) => cli._id === user._id)?.isMute ? (
-            <img
-              onClick={() => muteHandler(user._id)}
-              src="/img/mute-icon.png"
-              alt="avatar"
-              className={`${styles.micIcon} ${styles.mainMic} position-static`}
-            />
+            <Tooltip title="unmute">
+              <img
+                onClick={() => muteHandler(user._id)}
+                src="/img/mute-icon.png"
+                alt="avatar"
+                className={`${styles.micIcon} ${styles.mainMic} position-static`}
+              />
+            </Tooltip>
           ) : (
-            <img
-              onClick={() => muteHandler(user._id)}
-              src="/img/unmute-icon.png"
-              alt="avatar"
-              className={`${styles.micIcon} ${styles.mainMic} position-static`}
-            />
+            <Tooltip title="mute">
+              <img
+                onClick={() => muteHandler(user._id)}
+                src="/img/unmute-icon.png"
+                alt="avatar"
+                className={`${styles.micIcon} ${styles.mainMic} position-static`}
+              />
+            </Tooltip>
           )}
-          <select
-            className={styles.selectMenu}
-            onChange={(e) => setAudioSource(e.target.value)}
-          >
-            {mics.map((mic, index) => {
-              return (
-                <option value={mic.deviceId} key={index}>
-                  {mic.label}
-                </option>
-              );
-            })}
-          </select>
+          <Tooltip title="Choose a mic">
+            <select
+              className={styles.selectMenu}
+              onChange={(e) => setAudioSource(e.target.value)}
+            >
+              {mics.map((mic, index) => {
+                return (
+                  <option value={mic.deviceId} key={index}>
+                    {mic.label}
+                  </option>
+                );
+              })}
+            </select>
+          </Tooltip>
           {user?._id === room?.creator?._id && (
-            <span className={styles.endRoomSpan}>End the room</span>
+            <span className={styles.endRoomSpan} onClick={goBackHandler}>
+              End the room
+            </span>
           )}
         </div>
       )}
