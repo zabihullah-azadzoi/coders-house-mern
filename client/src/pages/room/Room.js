@@ -14,6 +14,7 @@ const Room = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalText, setModalText] = useState("");
   const [mics, setMics] = useState([]);
+  const [audioSource, setAudioSource] = useState("");
   const { roomId } = useParams();
   const { state: roomCreator } = useLocation();
   const user = useSelector((state) => state.auth.user);
@@ -23,7 +24,16 @@ const Room = () => {
     muteStatusHandler,
     raiseHandHandler,
     confirmRequestFlagRef,
-  } = useWebRTC(user, roomId, room, roomCreator, setModalText, setOpenModal);
+  } = useWebRTC(
+    user,
+    roomId,
+    room,
+    roomCreator,
+    setModalText,
+    setOpenModal,
+    audioSource,
+    setMics
+  );
   const navigate = useNavigate();
 
   const handleOk = () => {
@@ -57,17 +67,17 @@ const Room = () => {
     window.location.reload();
   };
 
-  useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-      const allAvailableMics = [];
-      devices.forEach((device) => {
-        if (device.kind === "audioinput" && device.label !== "Default") {
-          allAvailableMics.push(device.label);
-        }
-      });
-      setMics(allAvailableMics);
-    });
-  }, []);
+  navigator.permissions.query({ name: "microphone" }).then((result) => {
+    if (result.state === "granted") {
+      console.log(result.state);
+    }
+  });
+
+  // useEffect(() => {
+
+  // }, []);
+
+  console.log("mics", mics);
 
   return (
     <>
@@ -197,9 +207,16 @@ const Room = () => {
           alt="avatar"
           className={`${styles.micIcon} ${styles.mainMic} position-static`}
         />
-        <select className={styles.selectMenu}>
-          {mics.map((mic) => {
-            return <option key={mic}>{mic}</option>;
+        <select
+          className={styles.selectMenu}
+          onChange={(e) => setAudioSource(e.target.value)}
+        >
+          {mics.map((mic, index) => {
+            return (
+              <option value={mic.deviceId} key={index}>
+                {mic.label}
+              </option>
+            );
           })}
         </select>
         <span className={styles.endRoomSpan}>End the room</span>

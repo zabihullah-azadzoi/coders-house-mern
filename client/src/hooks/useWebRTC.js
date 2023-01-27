@@ -13,7 +13,9 @@ export const useWebRTC = (
   room,
   roomCreator,
   setModalText,
-  setOpenModal
+  setOpenModal,
+  audioSource,
+  setMics
 ) => {
   const [clients, setClients] = useStateWithCallback([]);
   const audioElementsRef = useRef({});
@@ -26,29 +28,14 @@ export const useWebRTC = (
 
   const navigate = useNavigate();
 
+  console.log("connectionsRef", connectionsRef.current);
+  console.log("audioRefs", audioElementsRef.current);
+
   const socketErrorHandler = (err) => {
     console.log(err);
     toast.error("Couldn't connect to server, please try again later!");
     navigate("/rooms");
   };
-
-  useEffect(() => {
-    socketRef.current = socketConnection();
-
-    //socket error handling
-    socketRef.current.on("connect_error", (err) => socketErrorHandler(err));
-    socketRef.current.on("connect_failed", (err) => socketErrorHandler(err));
-  }, []);
-
-  useEffect(() => {
-    if (room !== "") {
-      roomRef.current = room;
-    }
-  }, [room]);
-
-  useEffect(() => {
-    clientsRef.current = clients;
-  }, [clients]);
 
   const provideRef = (instance, clientId) => {
     audioElementsRef.current[clientId] = instance;
@@ -57,6 +44,24 @@ export const useWebRTC = (
   const raiseHandHandler = (client, roomId, roomCreator) => {
     socketRef.current.emit(ACTIONS.HAND_RAISE, { client, roomId, roomCreator });
     toast.success("Joining request sent to the Admin of panel");
+  };
+
+  const getMicsHandler = () => {
+    navigator.mediaDevices
+      .enumerateDevices()
+      .then((devices) => {
+        const allAvailableMics = [];
+        devices.forEach((device) => {
+          if (device.kind === "audioinput") {
+            allAvailableMics.push({
+              label: device.label,
+              deviceId: device.deviceId,
+            });
+          }
+        });
+        setMics(allAvailableMics);
+      })
+      .catch((e) => console.log(e));
   };
 
   const addNewClient = useCallback(
@@ -257,7 +262,51 @@ export const useWebRTC = (
   );
 
   useEffect(() => {
-    // handling raisehand events
+    socketRef.current = socketConnection();
+
+    //socket error handling
+    socketRef.current.on("connect_error", (err) => socketErrorHandler(err));
+    socketRef.current.on("connect_failed", (err) => socketErrorHandler(err));
+  }, []);
+
+  useEffect(() => {
+    if (room !== "") {
+      roomRef.current = room;
+    }
+  }, [room]);
+
+  useEffect(() => {
+    clientsRef.current = clients;
+  }, [clients]);
+
+  useEffect(() => {
+    // changing the microphone
+    if (audioSource !== "") {
+      const resetMediaStreamInput = () => {
+        navigator.mediaDevices
+          .getUserMedia({
+            audio: { deviceId: { exact: audioSource } },
+          })
+          .then((stream) => {
+            const audioTrack = stream.getTracks()[0];
+            for (const peer in connectionsRef.current) {
+              const senders = connectionsRef.current[peer].getSenders();
+              const sender = senders.find(
+                (s) => s.track.kind === audioTrack.kind
+              );
+              sender.replaceTrack(audioTrack);
+            }
+
+            audioElementsRef.current[user._id].srcObject = stream;
+            userMediaStream.current = stream;
+          });
+      };
+      resetMediaStreamInput();
+    }
+  }, [audioSource]);
+
+  useEffect(() => {
+    // handling raise hand events
     socketRef.current.on(ACTIONS.HAND_RAISE, ({ client, peerId }) => {
       setModalText(`${client.name} wants to join the speakers board.`);
       setOpenModal(true);
@@ -356,6 +405,7 @@ export const useWebRTC = (
             }, 200);
           }
         );
+        getMicsHandler();
       })
       .catch((e) => console.log(e));
 
