@@ -67,18 +67,6 @@ const Room = () => {
     window.location.reload();
   };
 
-  navigator.permissions.query({ name: "microphone" }).then((result) => {
-    if (result.state === "granted") {
-      console.log(result.state);
-    }
-  });
-
-  // useEffect(() => {
-
-  // }, []);
-
-  console.log("mics", mics);
-
   return (
     <>
       <div className={`${styles.Container} container pt-2 ps-5 pe-5`}>

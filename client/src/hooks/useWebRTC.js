@@ -28,9 +28,6 @@ export const useWebRTC = (
 
   const navigate = useNavigate();
 
-  console.log("connectionsRef", connectionsRef.current);
-  console.log("audioRefs", audioElementsRef.current);
-
   const socketErrorHandler = (err) => {
     console.log(err);
     toast.error("Couldn't connect to server, please try again later!");
@@ -261,10 +258,10 @@ export const useWebRTC = (
     [roomId]
   );
 
+  //socket error handling
   useEffect(() => {
     socketRef.current = socketConnection();
 
-    //socket error handling
     socketRef.current.on("connect_error", (err) => socketErrorHandler(err));
     socketRef.current.on("connect_failed", (err) => socketErrorHandler(err));
   }, []);
@@ -279,13 +276,18 @@ export const useWebRTC = (
     clientsRef.current = clients;
   }, [clients]);
 
+  // changing the microphone
   useEffect(() => {
-    // changing the microphone
     if (audioSource !== "") {
       const resetMediaStreamInput = () => {
         navigator.mediaDevices
           .getUserMedia({
-            audio: { deviceId: { exact: audioSource } },
+            audio: {
+              deviceId: { exact: audioSource },
+              sampleRate: 44100,
+              noiseSuppression: true,
+              echoCancellation: true,
+            },
           })
           .then((stream) => {
             const audioTrack = stream.getTracks()[0];
@@ -368,7 +370,11 @@ export const useWebRTC = (
   useEffect(() => {
     const getMediaStream = async () => {
       userMediaStream.current = await navigator.mediaDevices.getUserMedia({
-        audio: true,
+        audio: {
+          sampleRate: 44100,
+          noiseSuppression: true,
+          echoCancellation: true,
+        },
       });
     };
     getMediaStream()
