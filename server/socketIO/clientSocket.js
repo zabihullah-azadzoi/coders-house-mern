@@ -39,11 +39,10 @@ module.exports = (io, socket) => {
   const handleLeave = async () => {
     const user = peerConnections[socket.id];
 
-    console.log("socket user: ", user);
-
     const rooms = socket.rooms;
     Array.from(rooms).forEach((room) => {
       const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
+      console.log("socket clients: ", clients);
       clients.forEach((client) => {
         io.to(client).emit(ACTIONS.REMOVE_PEER, {
           peerId: socket.id,
@@ -68,6 +67,10 @@ module.exports = (io, socket) => {
   const muteClientHandler = ({ roomId, userId }) => {
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
+    if (peerConnections[socket.id]) {
+      peerConnections[socket.id].isMute = true;
+    }
+
     clients?.forEach((client) => {
       io.to(client).emit(ACTIONS.MUTE, { userId });
     });
@@ -75,6 +78,10 @@ module.exports = (io, socket) => {
 
   const unMuteClientHandler = ({ roomId, userId }) => {
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+
+    if (peerConnections[socket.id]) {
+      peerConnections[socket.id].isMute = false;
+    }
 
     clients?.forEach((client) => {
       io.to(client).emit(ACTIONS.UN_MUTE, { userId });

@@ -93,16 +93,24 @@ export const useWebRTC = (
       connectionsRef.current[peerId].ontrack = ({
         streams: [remoteStream],
       }) => {
-        addNewClient({ ...remoteUser, isMute: true }, () => {
+        addNewClient({ ...remoteUser }, () => {
           if (audioElementsRef.current[remoteUser._id]) {
-            audioElementsRef.current[remoteUser._id].volume = 0;
+            if (remoteUser.isMute) {
+              audioElementsRef.current[remoteUser._id].volume = 0;
+            } else {
+              audioElementsRef.current[remoteUser._id].volume = 1;
+            }
             audioElementsRef.current[remoteUser._id].srcObject = remoteStream;
           } else {
             // rendering all clients might get a bit longer that's why we are using interval to check every second if clients list is updated and when it's updated and audio element is available than we are clearing the interval again.
             let settled = true;
             const interval = setInterval(() => {
               if (audioElementsRef.current[remoteUser._id]) {
-                audioElementsRef.current[remoteUser._id].volume = 0;
+                if (remoteUser.isMute) {
+                  audioElementsRef.current[remoteUser._id].volume = 0;
+                } else {
+                  audioElementsRef.current[remoteUser._id].volume = 1;
+                }
                 audioElementsRef.current[remoteUser._id].srcObject =
                   remoteStream;
 
