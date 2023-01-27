@@ -106,14 +106,16 @@ const Room = () => {
                   />
                 </span>
               )}
-            <span className={styles.emojiContainer} onClick={goBackHandler}>
-              <img
-                src="/img/leave-quietly-emoji.png"
-                alt="vector"
-                className={styles.leftArrow}
-              />
-              <span className="ms-2">Leave quietly</span>
-            </span>
+            {user?._id !== room?.creator?._id && (
+              <span className={styles.emojiContainer} onClick={goBackHandler}>
+                <img
+                  src="/img/leave-quietly-emoji.png"
+                  alt="vector"
+                  className={styles.leftArrow}
+                />
+                <span className="ms-2">Leave quietly</span>
+              </span>
+            )}
           </div>
         </div>
         <div className="d-flex mb-5">
@@ -190,27 +192,40 @@ const Room = () => {
           </div>
         </div>
       </div>
-      <div className={styles.micsContainer}>
-        <img
-          // onClick={() => muteHandler(client._id)}
-          src="/img/mute-icon.png"
-          alt="avatar"
-          className={`${styles.micIcon} ${styles.mainMic} position-static`}
-        />
-        <select
-          className={styles.selectMenu}
-          onChange={(e) => setAudioSource(e.target.value)}
-        >
-          {mics.map((mic, index) => {
-            return (
-              <option value={mic.deviceId} key={index}>
-                {mic.label}
-              </option>
-            );
-          })}
-        </select>
-        <span className={styles.endRoomSpan}>End the room</span>
-      </div>
+      {clients?.find((cli) => cli._id === user._id)?.isSpeaking && (
+        <div className={styles.micsContainer}>
+          {clients?.find((cli) => cli._id === user._id)?.isMute ? (
+            <img
+              onClick={() => muteHandler(user._id)}
+              src="/img/mute-icon.png"
+              alt="avatar"
+              className={`${styles.micIcon} ${styles.mainMic} position-static`}
+            />
+          ) : (
+            <img
+              onClick={() => muteHandler(user._id)}
+              src="/img/unmute-icon.png"
+              alt="avatar"
+              className={`${styles.micIcon} ${styles.mainMic} position-static`}
+            />
+          )}
+          <select
+            className={styles.selectMenu}
+            onChange={(e) => setAudioSource(e.target.value)}
+          >
+            {mics.map((mic, index) => {
+              return (
+                <option value={mic.deviceId} key={index}>
+                  {mic.label}
+                </option>
+              );
+            })}
+          </select>
+          {user?._id === room?.creator?._id && (
+            <span className={styles.endRoomSpan}>End the room</span>
+          )}
+        </div>
+      )}
     </>
   );
 };
