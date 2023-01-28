@@ -141,3 +141,23 @@ exports.logoutHandler = async (req, res) => {
 
   res.json({ user: null, isAuth: false });
 };
+
+exports.deleteProfile = async (req, res) => {
+  try {
+    const user = req.user;
+    const { refreshToken } = req.cookies;
+    await Token.findOneAndDelete({
+      token: refreshToken,
+      userId: user._id,
+    });
+
+    await User.findByIdAndDelete(user._id);
+
+    res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
+
+    res.json({ user: null, isAuth: false });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

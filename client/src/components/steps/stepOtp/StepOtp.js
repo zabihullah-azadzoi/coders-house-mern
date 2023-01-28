@@ -23,20 +23,20 @@ const StepOtp = () => {
   const verifyOtpHandler = () => {
     verifyOtp(otp, phone, hash)
       .then((res) => {
-        if (res.data.user && res.data.auth) {
+        if (res && res.data.user) {
           dispatch(
             setAuth({
               user: { ...res.data.user, borderColor: randomColorGenerator() },
             })
           );
         }
-        console.log(res.data);
       })
-      .catch((e) =>
+      .catch((e) => {
+        console.log(e);
         e.response
           ? toast.error(e.response.data.message)
-          : toast.error("something went wrong!")
-      );
+          : toast.error("something went wrong!");
+      });
   };
 
   return (

@@ -17,3 +17,7 @@ export const verifyOtp = async (otp, phoneNumber, hash) => {
 export const logoutHandlerRequest = async () => {
   return await axiosInstance.get("/api/logout");
 };
+
+export const deleteProfile = async () => {
+  return await axiosInstance.get("/api/delete-profile");
+};
