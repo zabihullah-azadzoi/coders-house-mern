@@ -13,6 +13,7 @@ const StepName = ({ onNext }) => {
   const dispatch = useDispatch();
 
   const submitHandler = () => {
+    if (userName === "") return;
     dispatch(setName({ name: userName }));
     onNext();
   };

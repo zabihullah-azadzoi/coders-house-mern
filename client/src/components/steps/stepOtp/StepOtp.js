@@ -45,6 +45,7 @@ const StepOtp = () => {
         placeholder={"One Time Password"}
         value={otp}
         onChangeHandler={setOtp}
+        type="number"
       />
       <Button onNext={verifyOtpHandler} />
       <p className={`${styles.otpParagraph}`}>Didn't receive? Tap to resend</p>

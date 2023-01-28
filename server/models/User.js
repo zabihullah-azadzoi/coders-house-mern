@@ -2,11 +2,13 @@ const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
   {
-    name: { type: String, require: true },
+    name: { type: String },
     image: {
       type: String,
       get: formatImageName,
     },
+    bio: { type: String },
+    username: { type: String },
     phone: { type: String, require: true },
     isActivated: { type: Boolean, required: false, default: false },
   },

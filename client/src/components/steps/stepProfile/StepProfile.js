@@ -13,7 +13,7 @@ import { setAuth } from "../../../store/reducers/authReducer";
 
 const StepProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { name } = useSelector((state) => state.profile);
+  const { name, bio, username } = useSelector((state) => state.profile);
   const [profileImage, setProfileImage] = useState("");
 
   const dispatch = useDispatch();
@@ -35,9 +35,10 @@ const StepProfile = () => {
 
   const activateProfileHandler = () => {
     setIsLoading(true);
-    activateProfileRequest(name, profileImage)
+    activateProfileRequest(name, profileImage, bio, username)
       .then((res) => {
         setIsLoading(false);
+        console.log(res.data);
         if (res.data.user) {
           dispatch(
             setAuth({

@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 
 import StepName from "../../components/steps/stepName/StepName";
-import StepUsername from "../../components/steps/StepUsername";
+import StepUsername from "../../components/steps/stepUsername/StepUsername";
 import StepProfile from "../../components/steps/stepProfile/StepProfile";
-import StepProgress from "../../components/steps/StepProgress";
+import StepBio from "../../components/steps/stepBio/StepBio";
 
 const steps = {
   1: StepName,
-  2: StepProfile,
-  3: StepUsername,
-  4: StepProgress,
+  2: StepUsername,
+  3: StepBio,
+  4: StepProfile,
 };
 
 const Activate = () => {

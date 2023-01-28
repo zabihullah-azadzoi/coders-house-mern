@@ -36,8 +36,6 @@ const Room = () => {
   );
   const navigate = useNavigate();
 
-  console.log(clients);
-
   const handleOk = () => {
     confirmRequestFlagRef.current();
     setOpenModal(false);

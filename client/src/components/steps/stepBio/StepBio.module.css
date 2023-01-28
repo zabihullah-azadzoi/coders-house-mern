@@ -1,0 +1,13 @@
+.nameParagraph {
+  composes: nameParagraph from "../stepName/StepName.module.css";
+}
+.textarea {
+  width: 100%;
+  resize: none;
+  padding: 10px;
+  height: 7rem;
+  background-color: #292829;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+}

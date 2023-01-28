@@ -43,6 +43,7 @@ const Phone = ({ onNext }) => {
         placeholder={"Phone Number"}
         value={phone}
         onChangeHandler={setPhone}
+        type="number"
       />
       <Button onNext={sendOtpHandler} />
       <p className={`${styles.emailPhoneParagraph}`}>

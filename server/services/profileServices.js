@@ -20,6 +20,8 @@ exports.imageConverter = (image) => {
 exports.formatUserData = (user) => {
   return {
     name: user.name,
+    username: user.username,
+    bio: user.bio,
     phone: user.phone,
     avatar: user.image,
     _id: user._id,
