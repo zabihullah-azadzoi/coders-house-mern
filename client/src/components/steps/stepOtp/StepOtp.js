@@ -32,7 +32,6 @@ const StepOtp = () => {
         }
       })
       .catch((e) => {
-        console.log(e);
         e.response
           ? toast.error(e.response.data.message)
           : toast.error("something went wrong!");
