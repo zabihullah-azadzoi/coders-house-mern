@@ -27,7 +27,7 @@ const StepUsername = ({ onNext }) => {
           className={styles.usernameSign}
         />
         <TextInput
-          placeholder="Your Name"
+          placeholder="username goes here..."
           value={userName}
           onChangeHandler={setUserName}
         />

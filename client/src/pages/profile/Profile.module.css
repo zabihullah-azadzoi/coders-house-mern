@@ -1,0 +1,30 @@
+.Container {
+  border-top: 1px solid #292829;
+}
+
+.navImage {
+  width: 7rem;
+  height: 7rem;
+  object-fit: contain;
+  border: 3px solid;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.username {
+  font-style: italic;
+  color: #bebcc0;
+}
+
+.bio {
+  color: #bebcc0;
+  margin-top: 2rem;
+}
+
+.deleteButton {
+  background-color: transparent;
+  color: red;
+  border: 1px solid red;
+  padding: 6px 10px;
+  border-radius: 8px;
+}

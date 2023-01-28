@@ -38,7 +38,6 @@ const StepProfile = () => {
     activateProfileRequest(name, profileImage, bio, username)
       .then((res) => {
         setIsLoading(false);
-        console.log(res.data);
         if (res.data.user) {
           dispatch(
             setAuth({

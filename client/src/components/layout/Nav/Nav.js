@@ -8,10 +8,12 @@ import { Tooltip } from "antd";
 import { logoutHandlerRequest } from "../../../http/authRequests";
 import { useSelector, useDispatch } from "react-redux";
 import { setAuth } from "../../../store/reducers/authReducer";
+import { useNavigate } from "react-router-dom";
 
 const Nav = () => {
   const { isAuth, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const logoutHandler = () => {
     logoutHandlerRequest()
@@ -38,6 +40,7 @@ const Nav = () => {
                   alt="profile"
                   className={`${styles.navImage} `}
                   style={{ borderColor: user?.borderColor }}
+                  onClick={() => navigate("/profile")}
                 />
               </Tooltip>
             </div>
