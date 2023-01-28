@@ -21,6 +21,7 @@ const StepOtp = () => {
   };
 
   const verifyOtpHandler = () => {
+    if (otp === "") return;
     verifyOtp(otp, phone, hash)
       .then((res) => {
         if (res && res.data.user) {

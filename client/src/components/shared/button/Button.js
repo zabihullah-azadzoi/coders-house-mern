@@ -1,10 +1,11 @@
 import React from "react";
 
-const Button = ({ onNext }) => {
+const Button = ({ onNext, ...props }) => {
   return (
     <button
       className="btn bg-primary text-light mb-4 mt-4 d-block m-auto"
       onClick={onNext}
+      {...props}
     >
       Next
       <img

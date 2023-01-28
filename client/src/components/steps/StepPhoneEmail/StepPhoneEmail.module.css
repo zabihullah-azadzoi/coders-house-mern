@@ -17,3 +17,9 @@
   color: #bebcc0;
   font-size: 13px;
 }
+
+.mask {
+  height: 100%;
+  width: 100%;
+  background-origin: black;
+}

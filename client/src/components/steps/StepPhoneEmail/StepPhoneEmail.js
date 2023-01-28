@@ -14,7 +14,7 @@ const StepPhoneEmail = ({ onNext }) => {
 
   const Component = types[type];
   return (
-    <div className="">
+    <div>
       <div className="col-md-4 offset-md-4 d-flex justify-content-end">
         <div
           onClick={() => setType("phone")}

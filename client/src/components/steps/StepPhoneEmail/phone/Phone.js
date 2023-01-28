@@ -16,6 +16,7 @@ const Phone = ({ onNext }) => {
   const dispatch = useDispatch();
 
   const sendOtpHandler = () => {
+    if (phone === "") return;
     sendOtp(phone)
       .then((res) => {
         if (res.data && res.statusText === "OK") {
