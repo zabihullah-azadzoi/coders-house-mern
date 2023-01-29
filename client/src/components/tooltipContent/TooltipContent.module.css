@@ -1,0 +1,19 @@
+.clientImage {
+  height: 4rem;
+  width: 4rem;
+  border-radius: 50%;
+  border: 3px solid;
+  margin-bottom: 1rem;
+}
+
+.clientName {
+  margin-bottom: 0;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.clientUsername {
+  font-style: italic;
+  color: grey;
+  font-size: 0.8rem;
+}

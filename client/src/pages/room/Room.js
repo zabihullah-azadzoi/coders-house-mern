@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "react-tooltip/dist/react-tooltip.css";
 import styles from "./Room.module.css";
+import TooltipContent from "../../components/tooltipContent/TooltipContent";
+
 import { useSelector } from "react-redux";
 import { useWebRTC } from "../../hooks/useWebRTC";
 
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getRoom } from "../../http/roomRequests";
 import { toast } from "react-toastify";
-import { Modal, Tooltip } from "antd";
-import { Tooltip as ReactTooltip } from "react-tooltip";
+// import { Modal, Tooltip } from "antd";
+import { Modal } from "antd";
+import { Tooltip } from "react-tooltip";
 
 const Room = () => {
   const [room, setRoom] = useState("");
@@ -18,6 +21,7 @@ const Room = () => {
   const [mics, setMics] = useState([]);
   const [audioSource, setAudioSource] = useState("");
   const [clientId, setClientId] = useState("");
+  const [tooltipContent, setTooltipContent] = useState("");
 
   const { roomId } = useParams();
   const { state: roomCreator } = useLocation();
@@ -74,6 +78,12 @@ const Room = () => {
   };
 
   console.log(clientId);
+
+  useEffect(() => {
+    if (clientId === "") return;
+    const client = clients.find((cli) => cli._id === clientId);
+    setTooltipContent(<TooltipContent client={client} />);
+  }, [clientId]);
 
   return (
     <>
@@ -139,17 +149,15 @@ const Room = () => {
               .filter((cli) => cli.isSpeaking === true)
               .map((client) => {
                 return (
-                  <div
-                    key={client._id}
-                    className={styles.memberContainer}
-                    // onMouseOver={(e) => setClientId(e.target.id)}
-                  >
+                  <div key={client._id} className={styles.memberContainer}>
                     <audio
                       ref={(instance) => provideRef(instance, client._id)}
                       autoPlay
                     />
                     <div className="position-relative">
                       <img
+                        id={client._id}
+                        onMouseOver={(e) => setClientId(e.target.id)}
                         className={styles.memberAvatar}
                         src={client.avatar ? client.avatar : "/img/monkey.png"}
                         alt="avatar"
@@ -166,17 +174,25 @@ const Room = () => {
                         alt="avatar"
                         className={styles.micIcon}
                       />
+                      <Tooltip
+                        anchorId={client._id}
+                        place="top"
+                        content={tooltipContent}
+                        style={{
+                          backgroundColor: "#fff",
+                          color: " #222",
+                          maxWidth: "15rem",
+                          lineBreak: "anywhere",
+                          zIndex: 1000,
+                        }}
+                      />
                     </div>
                     <h6>{client.name}</h6>
                   </div>
                 );
               })}
         </div>
-        <ReactTooltip
-          anchorId={clientId}
-          position="bottom"
-          content="Hello baya jan"
-        />
+
         <div>
           <h6>others in the room</h6>
           <div className="d-flex flex-wrap">
@@ -188,12 +204,26 @@ const Room = () => {
                     <div key={client._id} className={styles.memberContainer}>
                       <div className="position-relative">
                         <img
+                          id={client._id}
+                          onMouseOver={(e) => setClientId(e.target.id)}
                           className={styles.memberAvatar}
                           src={
                             client.avatar ? client.avatar : "/img/monkey.png"
                           }
                           alt="avatar"
                           style={{ borderColor: client.borderColor }}
+                        />
+                        <Tooltip
+                          anchorId={client._id}
+                          place="top"
+                          content={tooltipContent}
+                          style={{
+                            backgroundColor: "#fff",
+                            color: " #222",
+                            maxWidth: "15rem",
+                            lineBreak: "anywhere",
+                            zIndex: 1000,
+                          }}
                         />
                       </div>
                       <h6>{client.name}</h6>

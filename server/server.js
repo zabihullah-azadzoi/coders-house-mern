@@ -11,6 +11,7 @@ require("./DBConnection");
 const authRouter = require("./routes/authRoutes");
 const activateRouter = require("./routes/activateRoutes");
 const roomRouter = require("./routes/roomRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const webRTCSocket = require("./socketIO/webRTCSocket");
 const clientSocket = require("./socketIO/clientSocket");
@@ -40,6 +41,7 @@ const io = socketio(server, {
 app.use(authRouter);
 app.use(activateRouter);
 app.use(roomRouter);
+app.use(userRoutes);
 
 // socket events
 io.on("connection", (socket) => {

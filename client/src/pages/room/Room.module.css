@@ -92,3 +92,10 @@
   margin: 0 2rem;
   font-weight: bold;
 }
+
+.clientTooltip {
+  background-color: "#fff";
+  color: "#222";
+  max-width: "15rem";
+  line-break: "anywhere";
+}
