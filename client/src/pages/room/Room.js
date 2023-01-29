@@ -9,8 +9,7 @@ import { useWebRTC } from "../../hooks/useWebRTC";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getRoom } from "../../http/roomRequests";
 import { toast } from "react-toastify";
-// import { Modal, Tooltip } from "antd";
-import { Modal } from "antd";
+import { Modal, Tooltip as InfoTooltip } from "antd";
 import { Tooltip } from "react-tooltip";
 
 const Room = () => {
@@ -77,13 +76,11 @@ const Room = () => {
     window.location.reload();
   };
 
-  console.log(clientId);
-
   useEffect(() => {
     if (clientId === "") return;
     const client = clients.find((cli) => cli._id === clientId);
     setTooltipContent(<TooltipContent client={client} />);
-  }, [clientId]);
+  }, [clientId, clients]);
 
   return (
     <>
@@ -182,7 +179,7 @@ const Room = () => {
                           backgroundColor: "#fff",
                           color: " #222",
                           maxWidth: "15rem",
-                          lineBreak: "anywhere",
+                          overflowWrap: "break-word",
                           zIndex: 1000,
                         }}
                       />
@@ -221,7 +218,7 @@ const Room = () => {
                             backgroundColor: "#fff",
                             color: " #222",
                             maxWidth: "15rem",
-                            lineBreak: "anywhere",
+                            overflowWrap: "break-word",
                             zIndex: 1000,
                           }}
                         />
@@ -235,7 +232,7 @@ const Room = () => {
       </div>
       {clients?.find((cli) => cli._id === user._id)?.isSpeaking && (
         <div className={styles.micsContainer}>
-          <Tooltip title={mute ? "unmute" : "mute"}>
+          <InfoTooltip title={mute ? "unmute" : "mute"}>
             <img
               onClick={() => muteHandler(user._id)}
               src={
@@ -246,9 +243,9 @@ const Room = () => {
               alt="avatar"
               className={`${styles.micIcon} ${styles.mainMic} position-static`}
             />
-          </Tooltip>
+          </InfoTooltip>
 
-          <Tooltip title="Choose a mic">
+          <InfoTooltip title="Choose a mic">
             <select
               className={styles.selectMenu}
               onChange={(e) => setAudioSource(e.target.value)}
@@ -261,7 +258,7 @@ const Room = () => {
                 );
               })}
             </select>
-          </Tooltip>
+          </InfoTooltip>
           {user?._id === room?.creator?._id && (
             <span className={styles.endRoomSpan} onClick={goBackHandler}>
               End the room
