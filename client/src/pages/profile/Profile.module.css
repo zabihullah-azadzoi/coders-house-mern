@@ -29,3 +29,12 @@
   padding: 6px 10px;
   border-radius: 8px;
 }
+
+.allRoomsTitle {
+  composes: allRoomsTitle from "../room/Room.module.css";
+  margin-bottom: 4rem;
+}
+
+.leftArrow {
+  composes: leftArrow from "../room/Room.module.css";
+}

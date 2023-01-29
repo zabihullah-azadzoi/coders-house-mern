@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "react-tooltip/dist/react-tooltip.css";
 import styles from "./Room.module.css";
 import { useSelector } from "react-redux";
 import { useWebRTC } from "../../hooks/useWebRTC";
@@ -7,6 +8,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getRoom } from "../../http/roomRequests";
 import { toast } from "react-toastify";
 import { Modal, Tooltip } from "antd";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const Room = () => {
   const [room, setRoom] = useState("");
@@ -15,9 +17,12 @@ const Room = () => {
   const [modalText, setModalText] = useState("");
   const [mics, setMics] = useState([]);
   const [audioSource, setAudioSource] = useState("");
+  const [clientId, setClientId] = useState("");
+
   const { roomId } = useParams();
   const { state: roomCreator } = useLocation();
   const user = useSelector((state) => state.auth.user);
+
   const {
     clients,
     provideRef,
@@ -34,6 +39,7 @@ const Room = () => {
     audioSource,
     setMics
   );
+
   const navigate = useNavigate();
 
   const handleOk = () => {
@@ -66,6 +72,8 @@ const Room = () => {
     navigate("/rooms", { replace: true });
     window.location.reload();
   };
+
+  console.log(clientId);
 
   return (
     <>
@@ -131,7 +139,11 @@ const Room = () => {
               .filter((cli) => cli.isSpeaking === true)
               .map((client) => {
                 return (
-                  <div key={client._id} className={styles.memberContainer}>
+                  <div
+                    key={client._id}
+                    className={styles.memberContainer}
+                    // onMouseOver={(e) => setClientId(e.target.id)}
+                  >
                     <audio
                       ref={(instance) => provideRef(instance, client._id)}
                       autoPlay
@@ -143,27 +155,28 @@ const Room = () => {
                         alt="avatar"
                         style={{ borderColor: client.borderColor }}
                       />
-                      {client.isMute ? (
-                        <img
-                          onClick={() => muteHandler(client._id)}
-                          src="/img/mute-icon.png"
-                          alt="avatar"
-                          className={styles.micIcon}
-                        />
-                      ) : (
-                        <img
-                          onClick={() => muteHandler(client._id)}
-                          src="/img/unmute-icon.png"
-                          alt="avatar"
-                          className={styles.micIcon}
-                        />
-                      )}
+
+                      <img
+                        onClick={() => muteHandler(client._id)}
+                        src={
+                          client.isMute
+                            ? "/img/mute-icon.png"
+                            : "/img/unmute-icon.png"
+                        }
+                        alt="avatar"
+                        className={styles.micIcon}
+                      />
                     </div>
                     <h6>{client.name}</h6>
                   </div>
                 );
               })}
         </div>
+        <ReactTooltip
+          anchorId={clientId}
+          position="bottom"
+          content="Hello baya jan"
+        />
         <div>
           <h6>others in the room</h6>
           <div className="d-flex flex-wrap">
@@ -192,25 +205,19 @@ const Room = () => {
       </div>
       {clients?.find((cli) => cli._id === user._id)?.isSpeaking && (
         <div className={styles.micsContainer}>
-          {clients?.find((cli) => cli._id === user._id)?.isMute ? (
-            <Tooltip title="unmute">
-              <img
-                onClick={() => muteHandler(user._id)}
-                src="/img/mute-icon.png"
-                alt="avatar"
-                className={`${styles.micIcon} ${styles.mainMic} position-static`}
-              />
-            </Tooltip>
-          ) : (
-            <Tooltip title="mute">
-              <img
-                onClick={() => muteHandler(user._id)}
-                src="/img/unmute-icon.png"
-                alt="avatar"
-                className={`${styles.micIcon} ${styles.mainMic} position-static`}
-              />
-            </Tooltip>
-          )}
+          <Tooltip title={mute ? "unmute" : "mute"}>
+            <img
+              onClick={() => muteHandler(user._id)}
+              src={
+                clients?.find((cli) => cli._id === user._id)?.isMute
+                  ? "/img/mute-icon.png"
+                  : "/img/unmute-icon.png"
+              }
+              alt="avatar"
+              className={`${styles.micIcon} ${styles.mainMic} position-static`}
+            />
+          </Tooltip>
+
           <Tooltip title="Choose a mic">
             <select
               className={styles.selectMenu}

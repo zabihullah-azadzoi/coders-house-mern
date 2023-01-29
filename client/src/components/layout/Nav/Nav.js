@@ -30,7 +30,7 @@ const Nav = () => {
         <span className="fw-bold h4">Coders House</span>
       </div>
       <div className="d-flex align-items-center">
-        {isAuth && (
+        {isAuth && user?.isActivated && (
           <>
             <div className="d-flex align-items-center">
               <span className="me-3">{user?.name && user.name}</span>

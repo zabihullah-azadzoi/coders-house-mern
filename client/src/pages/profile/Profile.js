@@ -6,11 +6,13 @@ import { setAuth } from "../../store/reducers/authReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteProfile } from "../../http/authRequests";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [openModal, setOpenModal] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const deleteProfileHandler = () => {
     deleteProfile().then((res) => {
@@ -27,8 +29,21 @@ const Profile = () => {
     setOpenModal(false);
   };
 
+  const goBackHandler = () => {
+    navigate("/rooms", { replace: true });
+    window.location.reload();
+  };
+
   return (
     <div className={`${styles.Container} container pt-2 ps-5 pe-5 `}>
+      <div className={styles.allRoomsTitle} onClick={goBackHandler}>
+        <img
+          src="/img/left-arrow-icon.png"
+          alt="vector"
+          className={styles.leftArrow}
+        />
+        <h6 className="m-0 ms-2">All Voice Rooms</h6>
+      </div>
       <div className="d-flex justify-content-between mb-5">
         <h5 className="m-0 ms-2 mt-2">Profile</h5>
         <button
