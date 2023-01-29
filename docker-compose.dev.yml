@@ -1,0 +1,41 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data/db:/data/db
+  server:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server/
+    container_name: server
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    volumes:
+      - ./server:/server
+      - /server/node_modules
+    depends_on:
+      - mongodb
+  client:
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./
+    container_name: client
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - server

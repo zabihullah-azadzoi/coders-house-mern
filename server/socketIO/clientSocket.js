@@ -11,8 +11,6 @@ module.exports = (io, socket) => {
   const joinClientHandler = async ({ roomId, user }) => {
     peerConnections[socket.id] = user;
 
-    console.log("peerConnections", peerConnections);
-
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
     clients.forEach((client) => {
@@ -42,7 +40,6 @@ module.exports = (io, socket) => {
     const rooms = socket.rooms;
     Array.from(rooms).forEach((room) => {
       const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
-      console.log("socket clients: ", clients);
       clients.forEach((client) => {
         io.to(client).emit(ACTIONS.REMOVE_PEER, {
           peerId: socket.id,
