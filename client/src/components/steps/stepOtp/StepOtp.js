@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { verifyOtp } from "../../../http/authRequests";
+import OtpInput from "react-otp-input";
 
 import Card from "../../shared/card/Card";
 import Button from "../../shared/button/Button";
@@ -41,11 +42,21 @@ const StepOtp = () => {
 
   return (
     <Card icon={"lock-emoji"} title="Enter the code we just texted you">
-      <TextInput
+      {/* <TextInput
         placeholder={"One Time Password"}
         value={otp}
         onChangeHandler={setOtp}
         type="number"
+      /> */}
+      <OtpInput
+        value={otp}
+        onChange={(value) => setOtp(value)}
+        numInputs={4}
+        isInputNum={true}
+        shouldAutoFocus={true}
+        inputStyle={styles.otpInput}
+        containerStyle={styles.otpInputContainer}
+        focusStyle={styles.otpInputFocus}
       />
       <Button onNext={verifyOtpHandler} />
       <p className={`${styles.otpParagraph}`}>Didn't receive? Tap to resend</p>
