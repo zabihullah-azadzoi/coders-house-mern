@@ -16,7 +16,9 @@ const Phone = ({ onNext }) => {
   const dispatch = useDispatch();
 
   const sendOtpHandler = () => {
-    if (phone === "") return;
+    if (phone === "" || phone.length < 10 || phone.length > 14) {
+      return toast.error("Enter a valid phone number");
+    }
     sendOtp(phone)
       .then((res) => {
         if (res.data && res.statusText === "OK") {

@@ -5,6 +5,11 @@
   transition: 0.2s ease-in-out all;
 }
 
+.requestTimerParagraph {
+  color: #bebcc0;
+  font-size: 13px;
+}
+
 .otpParagraph:hover {
   color: #266cff;
 }

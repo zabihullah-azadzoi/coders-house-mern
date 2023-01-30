@@ -17,6 +17,8 @@ import { toast } from "react-toastify";
 
 const StepOtp = () => {
   const [otp, setOtp] = useState("");
+  const [otpWarning, setOptWarning] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(120);
   const { hash, phone } = useSelector((state) => state.auth.otp);
   const dispatch = useDispatch();
 
@@ -56,6 +58,19 @@ const StepOtp = () => {
             })
           );
           toast.success(res.data.message);
+          setOptWarning(true);
+
+          const interval = setInterval(() => {
+            setOtpTimer((prevState) => {
+              if (prevState === 0) {
+                setOptWarning(false);
+                clearInterval(interval);
+                return 120;
+              } else {
+                return prevState - 1;
+              }
+            });
+          }, 1000);
         }
       })
       .catch((e) =>
@@ -78,9 +93,15 @@ const StepOtp = () => {
         focusStyle={styles.otpInputFocus}
       />
       <Button onNext={verifyOtpHandler} />
-      <p className={`${styles.otpParagraph}`} onClick={resendOtpHandler}>
-        Didn't receive? Tap to resend
-      </p>
+      {otpWarning ? (
+        <p className={`${styles.requestTimerParagraph}`}>
+          request a new OTP in {otpTimer} seconds
+        </p>
+      ) : (
+        <p className={`${styles.otpParagraph}`} onClick={resendOtpHandler}>
+          Didn't receive? Tap to resend
+        </p>
+      )}
     </Card>
   );
 };

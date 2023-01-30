@@ -15,12 +15,12 @@ const Home = () => {
         make sure nothing breaks.
       </p>
 
-      <button className="btn bg-primary text-light mb-3 mt-3">
-        <Link to="/authenticate" className="text-decoration-none text-light">
+      <Link to="/authenticate" className="text-decoration-none text-light">
+        <button className="btn bg-primary text-light mb-3 mt-3">
           Get Username
-        </Link>
-        <FontAwesomeIcon icon={faArrowRight} className="text-light ms-2" />
-      </button>
+          <FontAwesomeIcon icon={faArrowRight} className="text-light ms-2" />
+        </button>
+      </Link>
 
       <div>
         <span className="text-primary me-2">Have an invite link?</span>
