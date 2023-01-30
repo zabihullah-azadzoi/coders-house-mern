@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 
 const StepOtp = () => {
   const [otp, setOtp] = useState("");
-  const [otpWarning, setOptWarning] = useState(false);
+  const [otpWarning, setOtpWarning] = useState(false);
   const [otpTimer, setOtpTimer] = useState(120);
   const { hash, phone } = useSelector((state) => state.auth.otp);
   const dispatch = useDispatch();
@@ -50,7 +50,6 @@ const StepOtp = () => {
     sendOtp(phone)
       .then((res) => {
         if (res.data && res.statusText === "OK") {
-          console.log(res);
           dispatch(
             setOtpReducer({
               hash: res.data.hash,
@@ -58,12 +57,12 @@ const StepOtp = () => {
             })
           );
           toast.success(res.data.message);
-          setOptWarning(true);
+          setOtpWarning(true);
 
           const interval = setInterval(() => {
             setOtpTimer((prevState) => {
               if (prevState === 0) {
-                setOptWarning(false);
+                setOtpWarning(false);
                 clearInterval(interval);
                 return 120;
               } else {

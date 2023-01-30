@@ -30,16 +30,11 @@ exports.generateOtp = (phoneNumber) => {
 };
 
 exports.sendOtp = (otp, phoneNumber) => {
-  client.messages
-    .create({
-      body: `Your OTP for signing in to Coders House is: ${otp}`,
-      from: process.env.TWILIO_FROM_NUMBER,
-      to: phoneNumber,
-    })
-    .then((res) => {
-      // console.log(res)
-    })
-    .catch((e) => console.log("Twilio Error --->", e));
+  return client.messages.create({
+    body: `Your OTP for signing in to Coders House is: ${otp}`,
+    from: process.env.TWILIO_FROM_NUMBER,
+    to: phoneNumber,
+  });
 };
 
 exports.verifyOtp = (phoneNumber, otp, expiresIn, hashedOtp) => {

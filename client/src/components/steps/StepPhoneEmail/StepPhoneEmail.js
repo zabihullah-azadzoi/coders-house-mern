@@ -17,7 +17,7 @@ const StepPhoneEmail = ({ onNext }) => {
     <div>
       <div
         className="col-md-4 offset-md-4 d-flex justify-content-end"
-        style={{ marginTop: "10rem" }}
+        style={{ marginTop: "5rem" }}
       >
         <div
           onClick={() => setType("phone")}

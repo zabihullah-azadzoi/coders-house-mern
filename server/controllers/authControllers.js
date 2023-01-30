@@ -21,7 +21,19 @@ exports.sendOtpHandler = async (req, res) => {
     const { otp, hash } = generateOtp(phoneNumber);
 
     // 3. send otp to phone number
-    // sendOtp(otp, phoneNumber);
+    // sendOtp(otp, phoneNumber)
+    //   .then((response) => {
+    //     res.json({
+    //       message: "OTP is sent to provided phone number",
+    //       hash,
+    //       phoneNumber,
+    //       otp,
+    //     });
+    //   })
+    //   .catch((e) => {
+    //     console.log("Twilio Error --->", e.message);
+    //     return res.status(500).json({ message: "Something went wrong!" });
+    //   });
 
     res.json({
       message: "OTP is sent to provided phone number",

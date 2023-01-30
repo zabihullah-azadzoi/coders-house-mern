@@ -230,42 +230,41 @@ const Room = () => {
           </div>
         </div>
       </div>
-      {clients?.find((cli) => cli._id === user._id)?.isSpeaking && (
-        <div className={styles.micsContainer}>
-          <InfoTooltip title={mute ? "unmute" : "mute"}>
-            <img
-              onClick={() => muteHandler(user._id)}
-              src={
-                clients?.find((cli) => cli._id === user._id)?.isMute
-                  ? "/img/mute-icon.png"
-                  : "/img/unmute-icon.png"
-              }
-              alt="avatar"
-              className={`${styles.micIcon} ${styles.mainMic} position-static`}
-            />
-          </InfoTooltip>
 
-          <InfoTooltip title="Choose a mic">
-            <select
-              className={styles.selectMenu}
-              onChange={(e) => setAudioSource(e.target.value)}
-            >
-              {mics.map((mic, index) => {
-                return (
-                  <option value={mic.deviceId} key={index}>
-                    {mic.label}
-                  </option>
-                );
-              })}
-            </select>
-          </InfoTooltip>
-          {user?._id === room?.creator?._id && (
-            <span className={styles.endRoomSpan} onClick={goBackHandler}>
-              End the room
-            </span>
-          )}
-        </div>
-      )}
+      <div className={styles.micsContainer}>
+        <InfoTooltip title={mute ? "unmute" : "mute"}>
+          <img
+            onClick={() => muteHandler(user._id)}
+            src={
+              clients?.find((cli) => cli._id === user._id)?.isMute
+                ? "/img/mute-icon.png"
+                : "/img/unmute-icon.png"
+            }
+            alt="avatar"
+            className={`${styles.micIcon} ${styles.mainMic} position-static`}
+          />
+        </InfoTooltip>
+
+        <InfoTooltip title="Choose a mic">
+          <select
+            className={styles.selectMenu}
+            onChange={(e) => setAudioSource(e.target.value)}
+          >
+            {mics.map((mic, index) => {
+              return (
+                <option value={mic.deviceId} key={index}>
+                  {mic.label}
+                </option>
+              );
+            })}
+          </select>
+        </InfoTooltip>
+        {user?._id === room?.creator?._id && (
+          <span className={styles.endRoomSpan} onClick={goBackHandler}>
+            End the room
+          </span>
+        )}
+      </div>
     </>
   );
 };
