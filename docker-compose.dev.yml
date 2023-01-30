@@ -24,10 +24,11 @@ services:
     depends_on:
       - mongodb
   client:
-    build: 
+    build:
       dockerfile: Dockerfile.dev
       context: ./
     container_name: client
+    restart: always
     ports:
       - "3000:3000"
     env_file:
