@@ -15,7 +15,10 @@ const StepPhoneEmail = ({ onNext }) => {
   const Component = types[type];
   return (
     <div>
-      <div className="col-md-4 offset-md-4 d-flex justify-content-end">
+      <div
+        className="col-md-4 offset-md-4 d-flex justify-content-end"
+        style={{ marginTop: "10rem" }}
+      >
         <div
           onClick={() => setType("phone")}
           className={`${styles.iconContainer} ${

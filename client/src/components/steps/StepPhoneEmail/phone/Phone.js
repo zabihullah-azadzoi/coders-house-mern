@@ -39,7 +39,11 @@ const Phone = ({ onNext }) => {
   };
 
   return (
-    <Card icon={"phone-emoji"} title="Enter your phone number">
+    <Card
+      icon={"phone-emoji"}
+      title="Enter your phone number"
+      style={{ marginTop: "0" }}
+    >
       <TextInput
         placeholder={"Phone Number"}
         value={phone}

@@ -33,7 +33,7 @@ const Nav = () => {
         {isAuth && user?.isActivated && (
           <>
             <div className="d-flex align-items-center">
-              <span className="me-3">{user?.name && user.name}</span>
+              <span className="me-3 fw-bold">{user?.name && user.name}</span>
               <Tooltip title="Profile">
                 <img
                   src={user?.avatar ? user.avatar : "/img/monkey.png"}

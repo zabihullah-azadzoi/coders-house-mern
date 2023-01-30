@@ -12,7 +12,11 @@ const Email = ({ onNext }) => {
   }, []);
 
   return (
-    <Card icon={"email-emoji"} title="Enter your Email Address">
+    <Card
+      icon={"email-emoji"}
+      title="Enter your Email Address"
+      style={{ marginTop: "0" }}
+    >
       <TextInput placeholder={"Email Address"} disabled />
       <Button onNext={onNext} disabled />
       <p className={`${styles.emailPhoneParagraph}`}>
