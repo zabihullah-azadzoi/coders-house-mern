@@ -1,16 +1,19 @@
 import React, { useState } from "react";
+import styles from "./StepOtp.module.css";
+
 import { verifyOtp } from "../../../http/authRequests";
 import OtpInput from "react-otp-input";
 
 import Card from "../../shared/card/Card";
 import Button from "../../shared/button/Button";
-import TextInput from "../../shared/textInput/TextInput";
 
-import { setAuth } from "../../../store/reducers/authReducer";
+import { sendOtp } from "../../../http/authRequests";
+import {
+  setAuth,
+  setOtp as setOtpReducer,
+} from "../../../store/reducers/authReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-
-import styles from "./StepOtp.module.css";
 
 const StepOtp = () => {
   const [otp, setOtp] = useState("");
@@ -40,14 +43,30 @@ const StepOtp = () => {
       });
   };
 
+  const resendOtpHandler = () => {
+    if (!phone) return;
+    sendOtp(phone)
+      .then((res) => {
+        if (res.data && res.statusText === "OK") {
+          console.log(res);
+          dispatch(
+            setOtpReducer({
+              hash: res.data.hash,
+              phone,
+            })
+          );
+          toast.success(res.data.message);
+        }
+      })
+      .catch((e) =>
+        e.response
+          ? toast.error(e.response.data.message)
+          : "something went wrong!"
+      );
+  };
+
   return (
     <Card icon={"lock-emoji"} title="Enter the code we just texted you">
-      {/* <TextInput
-        placeholder={"One Time Password"}
-        value={otp}
-        onChangeHandler={setOtp}
-        type="number"
-      /> */}
       <OtpInput
         value={otp}
         onChange={(value) => setOtp(value)}
@@ -59,7 +78,9 @@ const StepOtp = () => {
         focusStyle={styles.otpInputFocus}
       />
       <Button onNext={verifyOtpHandler} />
-      <p className={`${styles.otpParagraph}`}>Didn't receive? Tap to resend</p>
+      <p className={`${styles.otpParagraph}`} onClick={resendOtpHandler}>
+        Didn't receive? Tap to resend
+      </p>
     </Card>
   );
 };

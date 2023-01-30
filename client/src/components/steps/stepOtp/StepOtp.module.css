@@ -1,6 +1,12 @@
 .otpParagraph {
   color: #bebcc0;
   font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out all;
+}
+
+.otpParagraph:hover {
+  color: #266cff;
 }
 
 .otpInput {
