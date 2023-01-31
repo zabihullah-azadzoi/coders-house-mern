@@ -8,19 +8,18 @@ This capstone project includes all the necessary functionalities of a real time 
 Each user can create a room or join an existing room.
 Each guest in the room can join the speakers board by sending a join request to the Admin of the room.
 
+- features:
+  - Node provides the backend environment for this application
+  - Express middleware is used to handle requests, routes
+  - Mongoose schemas to model the application data
+  - React for displaying UI components
+  - Redux to manage application's state
+  - WebRTC is used for realtime communication between browsers
+  - Socket.io is used for realtime communication of server and end users
+  - Authentication is handled using JWT and refresh token method
+  - Twilio is used for OTP service
+  - Docker is used for Containerization
 
-* features:
-  * Node provides the backend environment for this application
-  * Express middleware is used to handle requests, routes
-  * Mongoose schemas to model the application data
-  * React for displaying UI components
-  * Redux to manage application's state
-  * WebRTC is used for realtime communication between browsers
-  * Socket.io is used for realtime communication of server and end users
-  * Authentication is handled using JWT and refresh token method
-  * Twilio is used for OTP service
- 
-  
 ## Setup
 
 ```
@@ -38,9 +37,8 @@ Each guest in the room can join the speakers board by sending a join request to 
   * TWILIO_FROM_NUMBER=
   * JWT_SECRET=
 
-  
-```
 
+```
 
 ## Start development in both server and client
 
@@ -53,8 +51,6 @@ $ npm run start
 ```
 $ npm run build
 ```
-
-
 
 ## Languages & tools
 
@@ -74,8 +70,7 @@ $ npm run build
 
 - [Twilio](https://www.twilio.com/)
 
-
-
+- [Docker](https://www.docker.com/)
 
 ## Screenshots
 
@@ -96,6 +91,3 @@ $ npm run build
 ![Screenshot from 2023-02-01 02-57-41](https://user-images.githubusercontent.com/57313413/215890675-819321ad-6c51-4e6f-949e-848cf8ec8afd.png)
 
 ![Screenshot from 2023-02-01 02-57-52](https://user-images.githubusercontent.com/57313413/215890712-cf52612f-2fc7-458c-85c5-862b62d86055.png)
-
-
-
