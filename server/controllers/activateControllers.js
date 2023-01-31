@@ -14,7 +14,7 @@ exports.activateUserHandler = async (req, res) => {
     let imageName = "";
     if (image) {
       const avatar = Buffer.from(
-        image.replace("data:image/jpeg;base64,", ""),
+        image.replace(/^data:image\/(png|jpg|jpeg);base64,/, ""),
         "base64"
       );
 
